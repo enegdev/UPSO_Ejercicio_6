@@ -1,3 +1,3 @@
-# UPSO_Ejercicio_6_
+# UPSO_Ejercicios
 
 
