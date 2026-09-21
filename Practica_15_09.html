@@ -1,0 +1,2024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio & Simulador Virtual Multiplayer: Unity & Godot 4</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --accent-blue: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #22c55e;
+            --accent-yellow: #f59e0b;
+            --accent-red: #f43f5e;
+            --border-color: #334155;
+            --code-bg: #090d16;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background-color: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+        }
+
+        .header-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge-tag {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            color: #000;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .engine-selector {
+            display: flex;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 4px;
+        }
+
+        .engine-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            padding: 6px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .engine-btn.active {
+            background-color: var(--accent-blue);
+            color: #000;
+        }
+
+        .user-meta {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: var(--code-bg);
+            padding: 6px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .user-meta input {
+            background: transparent;
+            border: none;
+            color: var(--accent-blue);
+            font-family: inherit;
+            font-weight: 600;
+            outline: none;
+            font-size: 0.95rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border-color);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            transition: width 0.4s ease;
+        }
+
+        .main-content {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .task-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s ease;
+        }
+
+        .task-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--accent-blue);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.92rem;
+            margin-bottom: 0.4rem;
+            color: #e2e8f0;
+        }
+
+        .form-control, select.form-control, textarea.form-control {
+            width: 100%;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: var(--text-color);
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus, select.form-control:focus, textarea.form-control:focus {
+            border-color: var(--accent-blue);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .sync-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: var(--code-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .sync-table th, .sync-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+        }
+
+        .sync-table th {
+            background-color: #1a2333;
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .sync-table input, .sync-table select {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 6px 10px;
+            border-radius: 6px;
+            width: 100%;
+            font-size: 0.85rem;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-add {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            margin-bottom: 0.5rem;
+        }
+        .btn-add:hover { background-color: rgba(34, 197, 94, 0.3); }
+
+        .btn-del {
+            background-color: rgba(244, 63, 94, 0.15);
+            color: var(--accent-red);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+        .btn-del:hover { background-color: rgba(244, 63, 94, 0.3); }
+
+        .pkg-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .pkg-item {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .pkg-item input[type="checkbox"] {
+            margin-top: 4px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .pkg-title {
+            font-weight: 700;
+            color: var(--accent-blue);
+            font-size: 0.95rem;
+        }
+
+        .pkg-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--accent-yellow);
+            background: rgba(245, 158, 11, 0.1);
+            padding: 1px 6px;
+            border-radius: 4px;
+        }
+
+        .pkg-desc {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .code-container {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2.5rem 1.25rem 1.25rem 1.25rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.88rem;
+            overflow-x: auto;
+            position: relative;
+            line-height: 2;
+            margin-bottom: 1rem;
+        }
+
+        /* Botón de Copiar Código integrado */
+        .btn-copy-code {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid var(--border-color);
+            color: #94a3b8;
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .btn-copy-code:hover {
+            background: var(--card-bg);
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
+        }
+
+        .btn-copy-code.copied {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--accent-green);
+            border-color: var(--accent-green);
+        }
+
+        .code-select {
+            background-color: #1e293b;
+            border: 1.5px solid var(--accent-blue);
+            color: var(--accent-yellow);
+            font-family: 'Fira Code', monospace;
+            font-size: 0.82rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 4px;
+            width: auto;
+            min-width: 180px;
+            transition: all 0.2s ease;
+        }
+
+        .code-select.correct {
+            border-color: var(--accent-green);
+            background-color: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+        }
+
+        .code-select.incorrect {
+            border-color: var(--accent-red);
+            background-color: rgba(244, 63, 94, 0.15);
+            color: #f87171;
+        }
+
+        .keyword { color: #f43f5e; font-weight: 600; }
+        .type { color: #38bdf8; }
+        .string { color: #22c55e; }
+        .comment { color: #64748b; font-style: italic; }
+        .func { color: #a855f7; }
+
+        .simulator-layout {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            gap: 1.25rem;
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .simulator-layout { grid-template-columns: 1fr; }
+        }
+
+        .sim-panel-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sim-section-box {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .sim-section-box h4 {
+            font-size: 0.88rem;
+            color: var(--accent-blue);
+            margin-bottom: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sim-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .sim-btn {
+            background-color: var(--code-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 9px 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+        }
+
+        .sim-btn:hover:not(:disabled) {
+            background-color: rgba(56, 189, 248, 0.15);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .sim-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .sim-btn.active-host {
+            border-color: var(--accent-green);
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--accent-green);
+        }
+
+        .sim-btn.active-client {
+            border-color: var(--accent-purple);
+            background: rgba(168, 85, 247, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .sim-btn kbd {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            color: var(--accent-yellow);
+        }
+
+        .slider-group {
+            margin-top: 8px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #cbd5e1;
+            margin-bottom: 4px;
+        }
+
+        .slider-group input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent-blue);
+        }
+
+        .canvas-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .network-viewport-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            position: relative;
+        }
+
+        @media (max-width: 600px) {
+            .network-viewport-wrapper { grid-template-columns: 1fr; }
+        }
+
+        .viewport-box {
+            background: #030712;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .viewport-box.host-border { border-color: rgba(34, 197, 94, 0.5); }
+        .viewport-box.client-border { border-color: rgba(168, 85, 247, 0.5); }
+
+        .viewport-title {
+            position: absolute;
+            top: 6px;
+            left: 8px;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            z-index: 10;
+            border: 1px solid var(--border-color);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 220px;
+            background-color: #050914;
+        }
+
+        .network-wire {
+            background-color: var(--card-bg);
+            border: 1px dashed var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .packet-indicator {
+            position: absolute;
+            width: 100px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--accent-yellow);
+            top: 50%;
+            transform: translateY(-50%);
+            box-shadow: 0 0 8px var(--accent-yellow);
+            opacity: 0;
+            transition: left linear;
+        }
+
+        .console-output {
+            background-color: #000;
+            border: 1px solid #1e293b;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.78rem;
+            height: 160px;
+            overflow-y: auto;
+            color: #a7f3d0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .log-entry { font-size: 0.75rem; line-height: 1.4; }
+        .log-host { color: #38bdf8; }
+        .log-client { color: #a855f7; }
+        .log-warn { color: #f59e0b; }
+        .log-err { color: #f43f5e; font-weight: 600; }
+        .log-ok { color: #22c55e; }
+
+        .btn-action {
+            background: linear-gradient(135deg, var(--accent-blue), #0284c7);
+            color: #000;
+            font-weight: 700;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.1s ease, box-shadow 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-presentation {
+            background: linear-gradient(135deg, var(--accent-purple), #7e22ce);
+            color: #fff;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            max-width: 950px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            border: 1px solid var(--accent-purple);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px; right: 20px;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            font-size: 1.5rem;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .pres-card {
+            background: var(--code-bg);
+            border-left: 4px solid var(--accent-purple);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border-radius: 0 8px 8px 0;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .pres-card h4 {
+            color: var(--accent-blue);
+            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        .status-pending { background: rgba(245, 158, 11, 0.2); color: var(--accent-yellow); border: 1px solid rgba(245, 158, 11, 0.4); }
+        .status-complete { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); border: 1px solid rgba(34, 197, 94, 0.4); }
+
+        .script-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-instruction {
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-instruction ol {
+            padding-left: 1.2rem;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .step-instruction li {
+            margin-bottom: 0.4rem;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            background: var(--code-bg);
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 8px;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-top: 3px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-green);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-container">
+            <div class="logo-area">
+                <span class="badge-tag">Multiplayer Engine Lab</span>
+                <h1 style="font-size: 1.1rem; font-weight:700;">Laboratorio Práctico: Tareas 1 a 6</h1>
+            </div>
+
+            <div class="engine-selector">
+                <button class="engine-btn active" id="btn-engine-unity" onclick="switchEngine('unity')">🎮 Unity (Netcode)</button>
+                <button class="engine-btn" id="btn-engine-godot" onclick="switchEngine('godot')">🤖 Godot 4 (ENet)</button>
+            </div>
+
+            <div class="user-meta">
+                <label for="student-name" style="margin:0; font-size: 0.85rem;">Estudiante:</label>
+                <input type="text" id="student-name" placeholder="Tu Nombre Aquí" value="" oninput="saveData(); updateProgress();">
+            </div>
+            
+            <button class="btn-action btn-presentation" onclick="togglePresentationMode()">
+                📋 Defensa Oral & Ficha
+            </button>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <section class="task-card" style="border-left: 4px solid var(--accent-blue);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                <div>
+                    <h2 style="font-size: 1.3rem; color: var(--accent-blue); margin-bottom: 0.5rem;">🎯 Guía Práctica de Arquitectura Multiplayer (<span class="engine-tag-label">Unity</span>)</h2>
+                    <p style="color: #94a3b8; font-size: 0.95rem;">
+                        Completa todos los campos en blanco, la sintaxis de código, la simulación y el checklist final de implementación en el motor.
+                    </p>
+                </div>
+                <div>
+                    <span id="completion-status" class="status-badge status-pending">Progreso: 0%</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 1 -->
+        <section class="task-card" id="task-1">
+            <div class="task-header">
+                <h3 class="task-title">
+                    <span>1️⃣</span> Tarea 1: Descripción, Clasificación del Juego y Arquitectura de Datos
+                </h3>
+            </div>
+
+            <div class="form-group">
+                <label for="t1-pitch">1. ¿De qué trata tu juego? (Pitch y Mecánicas Principales):</label>
+                <textarea id="t1-pitch" class="form-control" placeholder="Describe brevemente el género, cantidad de jugadores y la core loop de tu juego..." oninput="saveData(); updateProgress();"></textarea>
+            </div>
+
+            <div class="grid-2">
+                <div class="form-group">
+                    <label for="t1-type">2. Tipo de Multiplayer:</label>
+                    <select id="t1-type" class="form-control" onchange="saveData(); updateProgress();">
+                        <option value="">-- Selecciona una opción --</option>
+                        <option value="LAN">LAN (Red de Área Local)</option>
+                        <option value="Internet">Internet (Matchmaking / IP Directa)</option>
+                        <option value="Asincrónico">Asincrónico (Turnos guardados en Web API)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="t1-dynamic">3. Dinámica de Juego:</label>
+                    <select id="t1-dynamic" class="form-control" onchange="saveData(); updateProgress();">
+                        <option value="">-- Selecciona una opción --</option>
+                        <option value="Tiempo Real">Tiempo Real (Requiere predicción/interpolación)</option>
+                        <option value="Por Turnos">Por Turnos (Baja sensibilidad a latencia)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="t1-topology">4. Topología de Red elegida:</label>
+                <select id="t1-topology" class="form-control" onchange="saveData(); updateProgress();">
+                    <option value="">-- Selecciona una opción --</option>
+                    <option value="Host-Client">Host-Client (Servidor de escucha + jugador local)</option>
+                    <option value="Dedicated Server">Servidor Dedicado (Autoritativo puro sin gráficos)</option>
+                    <option value="Peer-to-Peer">Peer-to-Peer Mesh (P2P Directo)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <label style="margin: 0;">5. Tabla de Sincronización de Datos (Mínimo 3 datos clave):</label>
+                    <button class="btn-sm btn-add" onclick="addSyncRow()">➕ Agregar Otro Dato Clave</button>
+                </div>
+                
+                <table class="sync-table">
+                    <thead>
+                        <tr>
+                            <th>Entidad / Dato del Juego</th>
+                            <th>Técnica (Variable vs Evento RPC)</th>
+                            <th>Autoridad (¿Quién lo escribe?)</th>
+                            <th style="width: 80px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sync-table-body">
+                        <tr>
+                            <td><input type="text" placeholder="Ej: Posición / Salud" value="" class="sync-entity" oninput="saveData(); updateProgress();"></td>
+                            <td>
+                                <select class="sync-tech" onchange="saveData(); updateProgress();">
+                                    <option value="">Seleccionar</option>
+                                    <option value="Estado Sincronizado">Estado Sincronizado (NetworkVariable / Synchronized)</option>
+                                    <option value="Server RPC">Server RPC (Cliente -> Servidor)</option>
+                                    <option value="Client RPC">Client RPC (Servidor -> Clientes)</option>
+                                </select>
+                            </td>
+                            <td><input type="text" placeholder="Ej: Servidor Autoritativo" value="" class="sync-auth" oninput="saveData(); updateProgress();"></td>
+                            <td><button class="btn-sm btn-del" onclick="deleteSyncRow(this)">Eliminar</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-group">
+                <label for="t1-exploit">6. Vulnerabilidad / Trampa: ¿Qué ocurriría si un cliente modificase este valor localmente sin control del servidor?</label>
+                <textarea id="t1-exploit" class="form-control" placeholder="Explica el riesgo de desincronización o vulnerabilidad de cheats si el servidor no ejerce autoridad..." oninput="saveData(); updateProgress();"></textarea>
+            </div>
+        </section>
+
+        <!-- TAREA 2 -->
+        <section class="task-card" id="task-2">
+            <div class="task-header">
+                <h3 class="task-title">
+                    <span>2️⃣</span> Tarea 2: Configuración del Entorno en <span class="engine-tag-label">Unity</span>
+                </h3>
+            </div>
+
+            <div id="unity-env-box" style="display: block;">
+                <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1rem;">
+                    Marca los paquetes requeridos que instalaste en el Package Manager para habilitar el desarrollo multiplayer autoritativo:
+                </p>
+                <div class="pkg-list">
+                    <div class="pkg-item">
+                        <input type="checkbox" id="chk-u-ngo" onchange="saveData(); updateProgress();">
+                        <div>
+                            <div class="pkg-title">Netcode for GameObjects <span class="pkg-code">com.unity.netcode.gameobjects</span></div>
+                            <div class="pkg-desc">Ofrece NetworkManager, NetworkBehaviour, IsServer, IsClient y NetworkVariable para la sincronización principal.</div>
+                        </div>
+                    </div>
+                    <div class="pkg-item">
+                        <input type="checkbox" id="chk-u-mpm" onchange="saveData(); updateProgress();">
+                        <div>
+                            <div class="pkg-title">Multiplayer Play Mode <span class="pkg-code">com.unity.multiplayer.playmode</span></div>
+                            <div class="pkg-desc">Permite abrir hasta 4 clientes virtuales concurrentes directamente en el Editor de Unity sin necesidad de hacer Builds.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="godot-env-box" style="display: none;">
+                <p style="color: #cbd5e1; font-size: 0.9rem; margin-bottom: 1rem;">
+                    Marca la configuración del motor de red nativo ENet y el sistema de pruebas en Godot 4:
+                </p>
+                <div class="pkg-list">
+                    <div class="pkg-item">
+                        <input type="checkbox" id="chk-g-enet" onchange="saveData(); updateProgress();">
+                        <div>
+                            <div class="pkg-title">ENetMultiplayerPeer & Network Nodes <span class="pkg-code">High-Level Multiplayer</span></div>
+                            <div class="pkg-desc">Habilita la gestión de sockets UDP nativos, MultiplayerAPI y nodos MultiplayerSynchronizer / MultiplayerSpawner.</div>
+                        </div>
+                    </div>
+                    <div class="pkg-item">
+                        <input type="checkbox" id="chk-g-instances" onchange="saveData(); updateProgress();">
+                        <div>
+                            <div class="pkg-title">Opciones de Ejecución de Múltiples Instancias <span class="pkg-code">Debug -> Run Multiple Instances</span></div>
+                            <div class="pkg-desc">Configuración en Godot para lanzar automáticamente 2 o más instancias al presionar F5 para probar Host y Cliente.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 3 -->
+        <section class="task-card" id="task-script-1">
+            <div class="task-header">
+                <h3 class="task-title">
+                    <span>3️⃣</span> Tarea 3: Administrador de Red y Conexión de Clientes (Network Manager)
+                </h3>
+            </div>
+
+            <div id="unity-script-1" style="display: block;">
+                <span class="script-badge">📄 Unity C#: NetworkLobbyManager.cs</span>
+                <div class="code-container">
+                    <button class="btn-copy-code" onclick="copyCodeBlock(this)">📋 Copiar Código</button>
+                    <span class="keyword">using</span> UnityEngine;<br>
+                    <span class="keyword">using</span> Unity.Netcode;<br><br>
+
+                    <span class="keyword">public class</span> <span class="type">NetworkLobbyManager</span> : <span class="type">MonoBehaviour</span><br>
+                    {<br>
+                    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="func">IniciarHost</span>()<br>
+                    &nbsp;&nbsp;{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Inicia el modo Host (Servidor autoritativo + Cliente local)</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<select id="u1-starthost" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Seleccionar método --</option>
+                        <option value="NetworkManager.Singleton.StartHost()">NetworkManager.Singleton.StartHost()</option>
+                        <option value="NetworkManager.Instance.CreateHost()">NetworkManager.Instance.CreateHost()</option>
+                        <option value="NetworkManager.StartHostServer()">NetworkManager.StartHostServer()</option>
+                    </select>;<br>
+                    &nbsp;&nbsp;}<br><br>
+
+                    &nbsp;&nbsp;<span class="keyword">public void</span> <span class="func">IniciarCliente</span>()<br>
+                    &nbsp;&nbsp;{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Se conecta al Host remoto como un cliente</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<select id="u1-startclient" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Seleccionar método --</option>
+                        <option value="NetworkManager.Singleton.StartClient()">NetworkManager.Singleton.StartClient()</option>
+                        <option value="NetworkManager.Singleton.JoinServer()">NetworkManager.Singleton.JoinServer()</option>
+                        <option value="NetworkManager.ConnectClient()">NetworkManager.ConnectClient()</option>
+                    </select>;<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+
+            <div id="godot-script-1" style="display: none;">
+                <span class="script-badge">📄 Godot GDScript: network_manager.gd</span>
+                <div class="code-container">
+                    <button class="btn-copy-code" onclick="copyCodeBlock(this)">📋 Copiar Código</button>
+                    <span class="keyword">extends</span> <span class="type">Node</span><br><br>
+
+                    <span class="keyword">const</span> PORT = <span class="type">8910</span><br>
+                    <span class="keyword">var</span> peer = <select id="g1-peerclass" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Seleccionar clase Peer --</option>
+                        <option value="ENetMultiplayerPeer.new()">ENetMultiplayerPeer.new()</option>
+                        <option value="MultiplayerPeer.new()">MultiplayerPeer.new()</option>
+                        <option value="NetworkPeer.new()">NetworkPeer.new()</option>
+                    </select><br><br>
+
+                    <span class="keyword">func</span> <span class="func">create_host_server</span>():<br>
+                    &nbsp;&nbsp;<span class="comment"># Abre el socket en el puerto para recibir clientes</span><br>
+                    &nbsp;&nbsp;peer.<select id="g1-createserver" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Crear Servidor --</option>
+                        <option value="create_server(PORT)">create_server(PORT)</option>
+                        <option value="listen(PORT)">listen(PORT)</option>
+                        <option value="host_game(PORT)">host_game(PORT)</option>
+                    </select><br>
+                    &nbsp;&nbsp;multiplayer.<select id="g1-setpeer" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Asignar Peer --</option>
+                        <option value="multiplayer_peer = peer">multiplayer_peer = peer</option>
+                        <option value="set_network_peer(peer)">set_network_peer(peer)</option>
+                        <option value="active_peer = peer">active_peer = peer</option>
+                    </select><br><br>
+
+                    <span class="keyword">func</span> <span class="func">join_as_client</span>(ip_address: <span class="type">String</span>):<br>
+                    &nbsp;&nbsp;<span class="comment"># Se conecta a la IP del host</span><br>
+                    &nbsp;&nbsp;peer.<select id="g1-createclient" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Crear Cliente --</option>
+                        <option value="create_client(ip_address, PORT)">create_client(ip_address, PORT)</option>
+                        <option value="connect_to_host(ip_address)">connect_to_host(ip_address)</option>
+                        <option value="join_session(ip_address, PORT)">join_session(ip_address, PORT)</option>
+                    </select><br>
+                    &nbsp;&nbsp;multiplayer.multiplayer_peer = peer<br>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 4 -->
+        <section class="task-card" id="task-script-2">
+            <div class="task-header">
+                <h3 class="task-title">
+                    <span>4️⃣</span> Tarea 4: Script de Movimiento de Personaje y Verificación de Autoridad Local
+                </h3>
+            </div>
+
+            <div id="unity-script-2" style="display: block;">
+                <span class="script-badge">📄 Unity C#: PlayerNetworkMovement.cs</span>
+                <div class="code-container">
+                    <button class="btn-copy-code" onclick="copyCodeBlock(this)">📋 Copiar Código</button>
+                    <span class="keyword">using</span> UnityEngine;<br>
+                    <span class="keyword">using</span> Unity.Netcode;<br><br>
+
+                    <span class="keyword">public class</span> <span class="type">PlayerNetworkMovement</span> : <select id="u2-inherit" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Seleccionar herencia --</option>
+                        <option value="NetworkBehaviour">NetworkBehaviour</option>
+                        <option value="MonoBehaviour">MonoBehaviour</option>
+                        <option value="NetworkEntity">NetworkEntity</option>
+                    </select><br>
+                    {<br>
+                    &nbsp;&nbsp;[SerializeField] <span class="keyword">private float</span> speed = <span class="type">5f</span>;<br><br>
+
+                    &nbsp;&nbsp;<span class="keyword">public override void</span> <select id="u2-spawncb" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Callback de Red --</option>
+                        <option value="OnNetworkSpawn">OnNetworkSpawn</option>
+                        <option value="Start">Start</option>
+                        <option value="OnServerStart">OnServerStart</option>
+                    </select>()<br>
+                    &nbsp;&nbsp;{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (<select id="u2-checkowner" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Comprobar Dueño --</option>
+                        <option value="IsOwner">IsOwner</option>
+                        <option value="IsServer">IsServer</option>
+                        <option value="IsLocalHost">IsLocalHost</option>
+                    </select>)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Debug.Log(<span class="string">"¡Soy el dueño de esta instancia de jugador!"</span>);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                    &nbsp;&nbsp;}<br><br>
+
+                    &nbsp;&nbsp;<span class="keyword">void</span> <span class="func">Update</span>()<br>
+                    &nbsp;&nbsp;{<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="comment">// Prevenir que un cliente controle el avatar de otro jugador remoto</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> (!<select id="u2-ownercheck2" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Filtro de Input --</option>
+                        <option value="IsOwner">IsOwner</option>
+                        <option value="IsLocalPlayer">IsLocalPlayer</option>
+                        <option value="HasAuthority">HasAuthority</option>
+                    </select>) <span class="keyword">return</span>;<br><br>
+
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">float</span> h = Input.GetAxis(<span class="string">"Horizontal"</span>);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">float</span> v = Input.GetAxis(<span class="string">"Vertical"</span>);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="type">Vector3</span> dir = <span class="keyword">new</span> <span class="type">Vector3</span>(h, <span class="type">0</span>, v);<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;transform.Translate(dir * speed * Time.deltaTime);<br>
+                    &nbsp;&nbsp;}<br>
+                    }
+                </div>
+            </div>
+
+            <div id="godot-script-2" style="display: none;">
+                <span class="script-badge">📄 Godot GDScript: player_movement.gd</span>
+                <div class="code-container">
+                    <button class="btn-copy-code" onclick="copyCodeBlock(this)">📋 Copiar Código</button>
+                    <span class="keyword">extends</span> <span class="type">CharacterBody3D</span><br><br>
+
+                    <span class="keyword">func</span> <span class="func">_enter_tree</span>():<br>
+                    &nbsp;&nbsp;<span class="comment"># Setea la autoridad del peer basándose en el ID asignado al nodo</span><br>
+                    &nbsp;&nbsp;<select id="g2-setauth" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Asignar Autoridad --</option>
+                        <option value="set_multiplayer_authority(name.to_int())">set_multiplayer_authority(name.to_int())</option>
+                        <option value="multiplayer.set_authority(id)">multiplayer.set_authority(id)</option>
+                        <option value="set_network_master(id)">set_network_master(id)</option>
+                    </select><br><br>
+
+                    <span class="keyword">func</span> <span class="func">_physics_process</span>(delta):<br>
+                    &nbsp;&nbsp;<span class="comment"># Solo el cliente dueño ejecuta su propio movimiento local</span><br>
+                    &nbsp;&nbsp;<span class="keyword">if</span> <span class="keyword">not</span> <select id="g2-isauth" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Validar Autoridad --</option>
+                        <option value="is_multiplayer_authority()">is_multiplayer_authority()</option>
+                        <option value="multiplayer.is_server()">multiplayer.is_server()</option>
+                        <option value="is_network_master()">is_network_master()</option>
+                    </select>:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">return</span><br><br>
+
+                    &nbsp;&nbsp;<span class="keyword">var</span> input_dir = Input.get_vector(<span class="string">"ui_left"</span>, <span class="string">"ui_right"</span>, <span class="string">"ui_up"</span>, <span class="string">"ui_down"</span>)<br>
+                    &nbsp;&nbsp;velocity.x = input_dir.x * <span class="type">5.0</span><br>
+                    &nbsp;&nbsp;velocity.z = input_dir.y * <span class="type">5.0</span><br>
+                    &nbsp;&nbsp;<select id="g2-movefunc" class="code-select" onchange="saveData(); updateProgress();">
+                        <option value="">-- Aplicar Movimiento --</option>
+                        <option value="move_and_slide()">move_and_slide()</option>
+                        <option value="apply_force()">apply_force()</option>
+                        <option value="sync_position()">sync_position()</option>
+                    </select><br>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAREA 5 -->
+        <section class="task-card" id="task-5">
+            <div class="task-header">
+                <h3 class="task-title">
+                    <span>5️⃣</span> Tarea 5: Motor de Simulación en Tiempo Real & Evaluación de Red
+                </h3>
+            </div>
+
+            <div id="unity-steps-guide" class="step-instruction" style="display: block;">
+                <strong style="color: var(--accent-blue); display: block; margin-bottom: 0.5rem;">🛠️ Instrucciones de Prueba en Unity Editor:</strong>
+                <ol>
+                    <li>Abre el menú <strong>Multiplayer -> Multiplayer Play Mode</strong>.</li>
+                    <li>Activa 2 Virtual Players. Presiona <strong>Play</strong>.</li>
+                    <li>En Player 1 ejecuta <code>StartHost()</code> y en Player 2 ejecuta <code>StartClient()</code>.</li>
+                </ol>
+            </div>
+
+            <div id="godot-steps-guide" class="step-instruction" style="display: none;">
+                <strong style="color: var(--accent-blue); display: block; margin-bottom: 0.5rem;">🛠️ Instrucciones de Prueba en Godot 4:</strong>
+                <ol>
+                    <li>Menú <strong>Debug -> Run Multiple Instances</strong> (2 Instancias).</li>
+                    <li>Presiona <strong>F5</strong>. Ejecuta Host en la primera y Client en la segunda.</li>
+                </ol>
+            </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="color: var(--accent-yellow); font-size: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+                    <span>🎮</span> Simulador Gráfico de Red Virtual (Canvas 60 FPS)
+                </h4>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 1rem;">
+                    *Simulador interactivo de paquetes UDP, latencia, autoridad de movimiento y disparo RPC.
+                </p>
+
+                <div class="simulator-layout">
+                    <div class="sim-panel-controls">
+                        <div class="sim-section-box">
+                            <h4>1. Sockets & Conexión</h4>
+                            <div class="sim-btn-grid">
+                                <button id="btn-sim-host" class="sim-btn" onclick="simHost()">
+                                    <span>Start Host</span>
+                                    <kbd>Peer 1</kbd>
+                                </button>
+                                <button id="btn-sim-client" class="sim-btn" onclick="simClient()" disabled>
+                                    <span>Start Client</span>
+                                    <kbd>Peer 2</kbd>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="sim-section-box">
+                            <h4>2. Input Autoritativo</h4>
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; max-width: 160px; margin: 0 auto 8px;">
+                                <div></div>
+                                <button class="sim-btn" style="justify-content:center;" onclick="movePlayer(0, -10)">▲</button>
+                                <div></div>
+                                <button class="sim-btn" style="justify-content:center;" onclick="movePlayer(-10, 0)">◄</button>
+                                <button class="sim-btn" style="justify-content:center;" onclick="movePlayer(0, 10)">▼</button>
+                                <button class="sim-btn" style="justify-content:center;" onclick="movePlayer(10, 0)">►</button>
+                            </div>
+                            <button id="btn-sim-rpc" class="sim-btn" style="width: 100%; justify-content: center; border-color: var(--accent-purple);" onclick="sendFireRPC()" disabled>
+                                💥 Disparar (ServerRPC)
+                            </button>
+                        </div>
+
+                        <div class="sim-section-box">
+                            <h4>3. Simulación de Red & Lag</h4>
+                            <div class="slider-group">
+                                <label>
+                                    <span>Latencia (Ping):</span>
+                                    <strong id="ping-val" style="color: var(--accent-yellow);">0 ms</strong>
+                                </label>
+                                <input type="range" id="sim-lag" min="0" max="600" step="50" value="0" oninput="document.getElementById('ping-val').textContent = this.value + ' ms';">
+                            </div>
+                            <div class="slider-group">
+                                <label>
+                                    <span>Interpolación (Lerp):</span>
+                                    <strong id="lerp-val" style="color: var(--accent-blue);">Suave (0.15)</strong>
+                                </label>
+                                <input type="range" id="sim-lerp" min="0.05" max="0.5" step="0.05" value="0.15">
+                            </div>
+                        </div>
+
+                        <button class="sim-btn" style="border-color: var(--accent-red); color: var(--accent-red); justify-content: center;" onclick="resetSimulation()">
+                            🔄 Resetear Simulador
+                        </button>
+                    </div>
+
+                    <div class="canvas-container">
+                        <div class="network-viewport-wrapper">
+                            <div class="viewport-box host-border">
+                                <div class="viewport-title" style="color: var(--accent-green);">🖥️ Instance 1: Host (Server + Player 1)</div>
+                                <canvas id="canvas-host" width="390" height="220"></canvas>
+                            </div>
+
+                            <div class="viewport-box client-border">
+                                <div class="viewport-title" style="color: var(--accent-purple);">💻 Instance 2: Client (Player 2 View)</div>
+                                <canvas id="canvas-client" width="390" height="220"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="network-wire">
+                            <span>Host [Socket 8910]</span>
+                            <div style="font-size:0.7rem; color: var(--accent-yellow);" id="packet-status">Red Inactiva</div>
+                            <div id="packet-anim" class="packet-indicator"></div>
+                            <span>Client [Socket UDP]</span>
+                        </div>
+
+                        <div class="console-output" id="sim-console">
+                            <div class="log-entry" style="color: #64748b;">// Consola de Sockets UDP e Interpolación activa. Inicia Host para simular.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pkg-list" style="margin-bottom: 1.2rem;">
+                <div class="pkg-item">
+                    <input type="checkbox" id="chk-test-multi" onchange="saveData(); updateProgress();">
+                    <div>
+                        <div class="pkg-title">Verificación de Múltiples Instancias Ejecutables</div>
+                        <div class="pkg-desc">Logré ejecutar exitosamente 2 instancias conectadas (Host/Client) sin conflictos de socket.</div>
+                    </div>
+                </div>
+
+                <div class="pkg-item">
+                    <input type="checkbox" id="chk-test-auth" onchange="saveData(); updateProgress();">
+                    <div>
+                        <div class="pkg-title">Validación Autoritativa de Inputs</div>
+                        <div class="pkg-desc">El personaje sólo responde a las teclas autorizadas para su Peer ID (IsOwner / is_multiplayer_authority).</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="t5-notes">Observaciones de la prueba en vivo / simulada (Latencia percibida, réplica o logs):</label>
+                <textarea id="t5-notes" class="form-control" placeholder="Escribe tus observaciones técnicas de las pruebas en vivo o del simulador..." oninput="saveData(); updateProgress();"></textarea>
+            </div>
+        </section>
+
+        <!-- TAREA 6 -->
+        <section class="task-card" id="task-6" style="border: 1px solid var(--accent-green);">
+            <div class="task-header">
+                <h3 class="task-title" style="color: var(--accent-green);">
+                    <span>6️⃣</span> Tarea 6: Punto Final — Lista de Verificación Directa en Motor (<span class="engine-tag-label">Unity</span>)
+                </h3>
+            </div>
+
+            <p style="color: #cbd5e1; font-size: 0.92rem; margin-bottom: 1.2rem;">
+                A continuación debes realizar y verificar cada uno de los siguientes pasos dentro de tu editor de motor (<span class="engine-tag-label">Unity</span>) para dar por entregado el laboratorio práctico:
+            </p>
+
+            <div id="unity-checklist" style="display: block;">
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-u-step1" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">1. Crear GameObject "NetworkManager" en la escena principal:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Añade el componente <code>NetworkManager</code>. Configura Protocol ProtocolType en UnityTransport.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-u-step2" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">2. Crear Prefab de Jugador con Componentes de Red:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">En el Prefab del avatar asigna los componentes <code>NetworkObject</code>, <code>NetworkTransform</code> y el script <code>PlayerNetworkMovement.cs</code>.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-u-step3" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">3. Enlazar Prefab al NetworkManager:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Arrastra el Prefab del jugador a la casilla <code>PlayerPrefab</code> en el Inspector de NetworkManager para que el servidor lo spawnee automáticamente al conectar.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-u-step4" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">4. Implementar Interfaz Canvas UI para Conexión:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Crea dos botones UI ("Iniciar Host" e "Iniciar Cliente") vinculados a los métodos <code>StartHost()</code> y <code>StartClient()</code> del script <code>NetworkLobbyManager.cs</code>.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-u-step5" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">5. Prueba Final con Build Ejecutable y Editor:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Genera una Build Standalone (File -> Build Settings). Abre la Build como Host y el Editor como Cliente (o usando Multiplayer Play Mode). Verifica que no haya advertencias en la consola.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="godot-checklist" style="display: none;">
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-g-step1" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">1. Crear Escena Principal (main.tscn) con Nodos de Red:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Agrega un nodo <code>Node3D</code> principal y adjunta el script Autoload/Gestor <code>network_manager.gd</code>.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-g-step2" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">2. Configurar Escena de Jugador (player.tscn) con Sincronizador:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Añade un nodo <code>CharacterBody3D</code> con <code>MultiplayerSynchronizer</code> y <code>MultiplayerSpawner</code>. Configura las propiedades sincronizadas (position y rotation).</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-g-step3" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">3. Asignar Autoridad en el Script del Jugador:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Implementa <code>set_multiplayer_authority(name.to_int())</code> en <code>_enter_tree()</code> y filtra las entradas de teclado con <code>is_multiplayer_authority()</code>.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-g-step4" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">4. Crear Botones de Control en CanvasLayer:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Agrega botones en pantalla para invocar <code>create_host_server()</code> y <code>join_as_client("127.0.0.1")</code>.</p>
+                    </div>
+                </div>
+
+                <div class="checklist-item">
+                    <input type="checkbox" id="chk-g-step5" onchange="saveData(); updateProgress();">
+                    <div>
+                        <strong style="color: var(--accent-blue);">5. Probar con Múltiples Instancias Simultáneas:</strong>
+                        <p style="font-size:0.85rem; color:#94a3b8;">Ve a <code>Debug -> Run Multiple Instances -> 2 Instances</code>. Presiona F5 y verifica la sincronización fluida del movimiento entre ventanas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <label for="t6-repository">Link de Repositorio (GitHub/GitLab) o Registro de Entrega:</label>
+                <input type="text" id="t6-repository" class="form-control" placeholder="https://github.com/usuario/proyecto-multiplayer-engine" oninput="saveData(); updateProgress();">
+            </div>
+        </section>
+
+        <section class="task-card" style="text-align: center; background: linear-gradient(180deg, var(--card-bg), var(--code-bg)); border: 1px solid var(--accent-purple);">
+            <h3 style="font-size: 1.25rem; color: var(--accent-purple); margin-bottom: 0.5rem;">📢 Ficha de Evaluación Técnica (Defensa Oral)</h3>
+            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">
+                Genera la ficha evaluativa resumida con el desglose de las 6 Tareas para la presentación técnica.
+            </p>
+            <button class="btn-action btn-presentation" onclick="togglePresentationMode()">
+                📋 Mostrar Ficha Evaluativa Final
+            </button>
+        </section>
+
+    </main>
+
+    <div class="modal" id="pres-modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="togglePresentationMode()">×</button>
+            
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <span class="badge-tag" id="pres-engine-tag">UNITY NETCODE</span>
+                <h2 style="font-size: 1.6rem; margin-top: 8px; color: var(--accent-purple);">Ficha Evaluativa de Proyecto Multiplayer</h2>
+                <p style="color: #94a3b8; font-size: 0.95rem;" id="pres-author">Estudiante: -</p>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>1️⃣</span> Tarea 1: Clasificación y Arquitectura de Datos</h4>
+                <div id="pres-diag-1" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>2️⃣</span> Tarea 2: Entorno y Paquetes de Motor</h4>
+                <div id="pres-diag-2" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>3️⃣</span> Tarea 3: Script Network Manager</h4>
+                <div id="pres-diag-3" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>4️⃣</span> Tarea 4: Script de Movimiento y Autoridad</h4>
+                <div id="pres-diag-4" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>5️⃣</span> Tarea 5: Prueba Práctica en Vivo & Observaciones</h4>
+                <div id="pres-diag-5" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>6️⃣</span> Tarea 6: Checklist de Implementación Final en Motor</h4>
+                <div id="pres-diag-6" style="color:#cbd5e1; font-size:0.9rem;">-</div>
+            </div>
+
+            <div class="pres-card">
+                <h4><span>🎯</span> Resultado General de Evaluación</h4>
+                <p><strong>Estado Completo:</strong> <span id="pres-progress-val" style="color:var(--accent-green); font-weight:700;">0%</span></p>
+            </div>
+
+            <div style="text-align: center; margin-top: 1.5rem;">
+                <button class="btn-action" onclick="window.print()">🖨️ Exportar / Imprimir PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentEngine = 'unity';
+
+        const ANSWERS_UNITY = {
+            'u1-starthost': 'NetworkManager.Singleton.StartHost()',
+            'u1-startclient': 'NetworkManager.Singleton.StartClient()',
+            'u2-inherit': 'NetworkBehaviour',
+            'u2-spawncb': 'OnNetworkSpawn',
+            'u2-checkowner': 'IsOwner',
+            'u2-ownercheck2': 'IsOwner'
+        };
+
+        const ANSWERS_GODOT = {
+            'g1-peerclass': 'ENetMultiplayerPeer.new()',
+            'g1-createserver': 'create_server(PORT)',
+            'g1-setpeer': 'multiplayer_peer = peer',
+            'g1-createclient': 'create_client(ip_address, PORT)',
+            'g2-setauth': 'set_multiplayer_authority(name.to_int())',
+            'g2-isauth': 'is_multiplayer_authority()',
+            'g2-movefunc': 'move_and_slide()'
+        };
+
+        let simState = {
+            hostActive: false,
+            clientConnected: false,
+            p1: { x: 50, y: 110, targetX: 50, targetY: 110, color: '#22c55e', label: 'P1 (Host)' },
+            p2: { x: 180, y: 110, targetX: 180, targetY: 110, color: '#a855f7', label: 'P2 (Client)' },
+            bullets: []
+        };
+
+        /* Función para copiar el código del bloque reemplazando los selects por sus valores seleccionados o placeholders */
+        function copyCodeBlock(btn) {
+            const container = btn.closest('.code-container');
+            if (!container) return;
+
+            const clone = container.cloneNode(true);
+            const btnCopy = clone.querySelector('.btn-copy-code');
+            if (btnCopy) btnCopy.remove();
+
+            const selectsOriginal = container.querySelectorAll('select');
+            const selectsClone = clone.querySelectorAll('select');
+
+            selectsOriginal.forEach((sel, idx) => {
+                const val = sel.value ? sel.value : '[COMPLETAR_OPCION]';
+                if (selectsClone[idx]) {
+                    const txtNode = document.createTextNode(val);
+                    selectsClone[idx].parentNode.replaceChild(txtNode, selectsClone[idx]);
+                }
+            });
+
+            const rawText = clone.innerText || clone.textContent;
+
+            navigator.clipboard.writeText(rawText.trim()).then(() => {
+                const prevHTML = btn.innerHTML;
+                btn.innerHTML = '✅ ¡Copiado!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.innerHTML = prevHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar el código:', err);
+            });
+        }
+
+        function switchEngine(engine) {
+            currentEngine = engine;
+            const btnUnity = document.getElementById('btn-engine-unity');
+            const btnGodot = document.getElementById('btn-engine-godot');
+            const labels = document.querySelectorAll('.engine-tag-label');
+
+            const uEnv = document.getElementById('unity-env-box');
+            const gEnv = document.getElementById('godot-env-box');
+            const uScript1 = document.getElementById('unity-script-1');
+            const gScript1 = document.getElementById('godot-script-1');
+            const uScript2 = document.getElementById('unity-script-2');
+            const gScript2 = document.getElementById('godot-script-2');
+            const uGuide = document.getElementById('unity-steps-guide');
+            const gGuide = document.getElementById('godot-steps-guide');
+            const uChecklist = document.getElementById('unity-checklist');
+            const gChecklist = document.getElementById('godot-checklist');
+
+            if (engine === 'unity') {
+                btnUnity.classList.add('active'); btnGodot.classList.remove('active');
+                labels.forEach(l => l.textContent = 'Unity');
+                uEnv.style.display = 'block'; gEnv.style.display = 'none';
+                uScript1.style.display = 'block'; gScript1.style.display = 'none';
+                uScript2.style.display = 'block'; gScript2.style.display = 'none';
+                uGuide.style.display = 'block'; gGuide.style.display = 'none';
+                uChecklist.style.display = 'block'; gChecklist.style.display = 'none';
+            } else {
+                btnGodot.classList.add('active'); btnUnity.classList.remove('active');
+                labels.forEach(l => l.textContent = 'Godot 4');
+                uEnv.style.display = 'none'; gEnv.style.display = 'block';
+                uScript1.style.display = 'none'; gScript1.style.display = 'block';
+                uScript2.style.display = 'none'; gScript2.style.display = 'block';
+                uGuide.style.display = 'none'; gGuide.style.display = 'block';
+                uChecklist.style.display = 'none'; gChecklist.style.display = 'block';
+            }
+            saveData();
+            updateProgress();
+        }
+
+        function addSyncRow(data = { entity: '', tech: '', auth: '' }) {
+            const tbody = document.getElementById('sync-table-body');
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><input type="text" placeholder="Ej: Posición / Salud" value="${data.entity}" class="sync-entity" oninput="saveData(); updateProgress();"></td>
+                <td>
+                    <select class="sync-tech" onchange="saveData(); updateProgress();">
+                        <option value="">Seleccionar</option>
+                        <option value="Estado Sincronizado" ${data.tech === 'Estado Sincronizado' ? 'selected' : ''}>Estado Sincronizado (NetworkVariable / Synchronized)</option>
+                        <option value="Server RPC" ${data.tech === 'Server RPC' ? 'selected' : ''}>Server RPC (Cliente -> Servidor)</option>
+                        <option value="Client RPC" ${data.tech === 'Client RPC' ? 'selected' : ''}>Client RPC (Servidor -> Clientes)</option>
+                    </select>
+                </td>
+                <td><input type="text" placeholder="Ej: Servidor Autoritativo" value="${data.auth}" class="sync-auth" oninput="saveData(); updateProgress();"></td>
+                <td><button class="btn-sm btn-del" onclick="deleteSyncRow(this)">Eliminar</button></td>
+            `;
+            tbody.appendChild(tr);
+            saveData();
+            updateProgress();
+        }
+
+        function deleteSyncRow(btn) {
+            btn.closest('tr').remove();
+            saveData();
+            updateProgress();
+        }
+
+        function validateCodeAnswers() {
+            const answers = (currentEngine === 'unity') ? ANSWERS_UNITY : ANSWERS_GODOT;
+            let correctCount = 0;
+            let totalCount = Object.keys(answers).length;
+
+            for (let id in answers) {
+                const el = document.getElementById(id);
+                if (!el) continue;
+                if (el.value === answers[id]) {
+                    el.className = 'code-select correct';
+                    correctCount++;
+                } else if (el.value !== '') {
+                    el.className = 'code-select incorrect';
+                } else {
+                    el.className = 'code-select';
+                }
+            }
+            return { correctCount, totalCount };
+        }
+
+        function updateProgress() {
+            let totalFields = 0;
+            let filledFields = 0;
+
+            if (document.getElementById('t1-pitch').value.trim()) filledFields++; totalFields++;
+            if (document.getElementById('t1-type').value) filledFields++; totalFields++;
+            if (document.getElementById('t1-dynamic').value) filledFields++; totalFields++;
+            if (document.getElementById('t1-topology').value) filledFields++; totalFields++;
+            if (document.getElementById('t1-exploit').value.trim()) filledFields++; totalFields++;
+
+            const syncRows = document.querySelectorAll('#sync-table-body tr');
+            syncRows.forEach(row => {
+                totalFields += 3;
+                if (row.querySelector('.sync-entity').value.trim()) filledFields++;
+                if (row.querySelector('.sync-tech').value) filledFields++;
+                if (row.querySelector('.sync-auth').value.trim()) filledFields++;
+            });
+
+            if (currentEngine === 'unity') {
+                totalFields += 2;
+                if (document.getElementById('chk-u-ngo').checked) filledFields++;
+                if (document.getElementById('chk-u-mpm').checked) filledFields++;
+            } else {
+                totalFields += 2;
+                if (document.getElementById('chk-g-enet').checked) filledFields++;
+                if (document.getElementById('chk-g-instances').checked) filledFields++;
+            }
+
+            const { correctCount, totalCount } = validateCodeAnswers();
+            totalFields += totalCount;
+            filledFields += correctCount;
+
+            totalFields += 3;
+            if (document.getElementById('chk-test-multi').checked) filledFields++;
+            if (document.getElementById('chk-test-auth').checked) filledFields++;
+            if (document.getElementById('t5-notes').value.trim()) filledFields++;
+
+            if (currentEngine === 'unity') {
+                totalFields += 5;
+                if (document.getElementById('chk-u-step1').checked) filledFields++;
+                if (document.getElementById('chk-u-step2').checked) filledFields++;
+                if (document.getElementById('chk-u-step3').checked) filledFields++;
+                if (document.getElementById('chk-u-step4').checked) filledFields++;
+                if (document.getElementById('chk-u-step5').checked) filledFields++;
+            } else {
+                totalFields += 5;
+                if (document.getElementById('chk-g-step1').checked) filledFields++;
+                if (document.getElementById('chk-g-step2').checked) filledFields++;
+                if (document.getElementById('chk-g-step3').checked) filledFields++;
+                if (document.getElementById('chk-g-step4').checked) filledFields++;
+                if (document.getElementById('chk-g-step5').checked) filledFields++;
+            }
+
+            totalFields += 1;
+            if (document.getElementById('t6-repository').value.trim()) filledFields++;
+
+            totalFields += 1;
+            if (document.getElementById('student-name').value.trim()) filledFields++;
+
+            let percentage = totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;
+            document.getElementById('progress-bar').style.width = percentage + '%';
+            
+            const statusEl = document.getElementById('completion-status');
+            statusEl.textContent = `Progreso: ${percentage}%`;
+            if (percentage === 100) {
+                statusEl.className = 'status-badge status-complete';
+                statusEl.textContent = '✅ Proyecto 100% Completado';
+            } else {
+                statusEl.className = 'status-badge status-pending';
+            }
+        }
+
+        function saveData() {
+            const data = {
+                studentName: document.getElementById('student-name').value,
+                engine: currentEngine,
+                t1Pitch: document.getElementById('t1-pitch').value,
+                t1Type: document.getElementById('t1-type').value,
+                t1Dynamic: document.getElementById('t1-dynamic').value,
+                t1Topology: document.getElementById('t1-topology').value,
+                t1Exploit: document.getElementById('t1-exploit').value,
+                chkUNgo: document.getElementById('chk-u-ngo').checked,
+                chkUMpm: document.getElementById('chk-u-mpm').checked,
+                chkGEnet: document.getElementById('chk-g-enet').checked,
+                chkGInstances: document.getElementById('chk-g-instances').checked,
+                chkTestMulti: document.getElementById('chk-test-multi').checked,
+                chkTestAuth: document.getElementById('chk-test-auth').checked,
+                t5Notes: document.getElementById('t5-notes').value,
+                chkUStep1: document.getElementById('chk-u-step1').checked,
+                chkUStep2: document.getElementById('chk-u-step2').checked,
+                chkUStep3: document.getElementById('chk-u-step3').checked,
+                chkUStep4: document.getElementById('chk-u-step4').checked,
+                chkUStep5: document.getElementById('chk-u-step5').checked,
+                chkGStep1: document.getElementById('chk-g-step1').checked,
+                chkGStep2: document.getElementById('chk-g-step2').checked,
+                chkGStep3: document.getElementById('chk-g-step3').checked,
+                chkGStep4: document.getElementById('chk-g-step4').checked,
+                chkGStep5: document.getElementById('chk-g-step5').checked,
+                t6Repo: document.getElementById('t6-repository').value,
+                u1Host: document.getElementById('u1-starthost').value,
+                u1Client: document.getElementById('u1-startclient').value,
+                u2Inherit: document.getElementById('u2-inherit').value,
+                u2Spawn: document.getElementById('u2-spawncb').value,
+                u2Check: document.getElementById('u2-checkowner').value,
+                u2Check2: document.getElementById('u2-ownercheck2').value,
+                g1Peer: document.getElementById('g1-peerclass').value,
+                g1CreateSrv: document.getElementById('g1-createserver').value,
+                g1SetPeer: document.getElementById('g1-setpeer').value,
+                g1CreateCli: document.getElementById('g1-createclient').value,
+                g2SetAuth: document.getElementById('g2-setauth').value,
+                g2IsAuth: document.getElementById('g2-isauth').value,
+                g2Move: document.getElementById('g2-movefunc').value,
+                tableData: []
+            };
+
+            const rows = document.querySelectorAll('#sync-table-body tr');
+            rows.forEach(r => {
+                data.tableData.push({
+                    entity: r.querySelector('.sync-entity').value,
+                    tech: r.querySelector('.sync-tech').value,
+                    auth: r.querySelector('.sync-auth').value
+                });
+            });
+
+            localStorage.setItem('multiplayer_lab_data_v2', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const raw = localStorage.getItem('multiplayer_lab_data_v2');
+            if (!raw) {
+                addSyncRow({ entity: '', tech: '', auth: '' });
+                addSyncRow({ entity: '', tech: '', auth: '' });
+                addSyncRow({ entity: '', tech: '', auth: '' });
+                return;
+            }
+
+            try {
+                const data = JSON.parse(raw);
+                document.getElementById('student-name').value = data.studentName || '';
+                document.getElementById('t1-pitch').value = data.t1Pitch || '';
+                document.getElementById('t1-type').value = data.t1Type || '';
+                document.getElementById('t1-dynamic').value = data.t1Dynamic || '';
+                document.getElementById('t1-topology').value = data.t1Topology || '';
+                document.getElementById('t1-exploit').value = data.t1Exploit || '';
+
+                document.getElementById('chk-u-ngo').checked = !!data.chkUNgo;
+                document.getElementById('chk-u-mpm').checked = !!data.chkUMpm;
+                document.getElementById('chk-g-enet').checked = !!data.chkGEnet;
+                document.getElementById('chk-g-instances').checked = !!data.chkGInstances;
+
+                document.getElementById('chk-test-multi').checked = !!data.chkTestMulti;
+                document.getElementById('chk-test-auth').checked = !!data.chkTestAuth;
+                document.getElementById('t5-notes').value = data.t5Notes || '';
+
+                document.getElementById('chk-u-step1').checked = !!data.chkUStep1;
+                document.getElementById('chk-u-step2').checked = !!data.chkUStep2;
+                document.getElementById('chk-u-step3').checked = !!data.chkUStep3;
+                document.getElementById('chk-u-step4').checked = !!data.chkUStep4;
+                document.getElementById('chk-u-step5').checked = !!data.chkUStep5;
+
+                document.getElementById('chk-g-step1').checked = !!data.chkGStep1;
+                document.getElementById('chk-g-step2').checked = !!data.chkGStep2;
+                document.getElementById('chk-g-step3').checked = !!data.chkGStep3;
+                document.getElementById('chk-g-step4').checked = !!data.chkGStep4;
+                document.getElementById('chk-g-step5').checked = !!data.chkGStep5;
+                document.getElementById('t6-repository').value = data.t6Repo || '';
+
+                document.getElementById('u1-starthost').value = data.u1Host || '';
+                document.getElementById('u1-startclient').value = data.u1Client || '';
+                document.getElementById('u2-inherit').value = data.u2Inherit || '';
+                document.getElementById('u2-spawncb').value = data.u2Spawn || '';
+                document.getElementById('u2-checkowner').value = data.u2Check || '';
+                document.getElementById('u2-ownercheck2').value = data.u2Check2 || '';
+
+                document.getElementById('g1-peerclass').value = data.g1Peer || '';
+                document.getElementById('g1-createserver').value = data.g1CreateSrv || '';
+                document.getElementById('g1-setpeer').value = data.g1SetPeer || '';
+                document.getElementById('g1-createclient').value = data.g1CreateCli || '';
+                document.getElementById('g2-setauth').value = data.g2SetAuth || '';
+                document.getElementById('g2-isauth').value = data.g2IsAuth || '';
+                document.getElementById('g2-movefunc').value = data.g2Move || '';
+
+                const tbody = document.getElementById('sync-table-body');
+                tbody.innerHTML = '';
+                if (data.tableData && data.tableData.length > 0) {
+                    data.tableData.forEach(item => addSyncRow(item));
+                } else {
+                    addSyncRow({ entity: '', tech: '', auth: '' });
+                    addSyncRow({ entity: '', tech: '', auth: '' });
+                    addSyncRow({ entity: '', tech: '', auth: '' });
+                }
+
+                if (data.engine) switchEngine(data.engine);
+            } catch (e) {
+                console.error("Error cargando datos almacenados:", e);
+            }
+        }
+
+        function logSim(msg, type = 'info') {
+            const consoleEl = document.getElementById('sim-console');
+            const time = new Date().toLocaleTimeString();
+            let colorClass = 'log-host';
+            if (type === 'client') colorClass = 'log-client';
+            if (type === 'warn') colorClass = 'log-warn';
+            if (type === 'err') colorClass = 'log-err';
+            if (type === 'ok') colorClass = 'log-ok';
+
+            consoleEl.innerHTML += `<div class="log-entry ${colorClass}">[${time}] ${msg}</div>`;
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+        }
+
+        function animatePacket(direction = 'to-client', callback = null) {
+            const lag = parseInt(document.getElementById('sim-lag').value);
+            const pkt = document.getElementById('packet-anim');
+            const status = document.getElementById('packet-status');
+            
+            pkt.style.opacity = '1';
+            pkt.style.transition = `left ${Math.max(0.1, lag / 1000)}s linear`;
+            
+            if (direction === 'to-client') {
+                pkt.style.left = '10%';
+                status.textContent = `Enviando RPC -> Client (${lag}ms)`;
+                setTimeout(() => { pkt.style.left = '90%'; }, 20);
+            } else {
+                pkt.style.left = '90%';
+                status.textContent = `Enviando ServerRPC <- Host (${lag}ms)`;
+                setTimeout(() => { pkt.style.left = '10%'; }, 20);
+            }
+
+            setTimeout(() => {
+                pkt.style.opacity = '0';
+                status.textContent = 'Socket IDLE (Esperando paquetes)';
+                if (callback) callback();
+            }, Math.max(150, lag));
+        }
+
+        function simHost() {
+            const { correctCount, totalCount } = validateCodeAnswers();
+            if (correctCount < totalCount) {
+                logSim('⚠️ No puedes iniciar el Host. Completa correctamente los selectores de código de la Tarea 3 y 4.', 'err');
+                return;
+            }
+
+            simState.hostActive = true;
+            document.getElementById('btn-sim-host').classList.add('active-host');
+            document.getElementById('btn-sim-client').disabled = false;
+            logSim(`[${currentEngine.toUpperCase()}] Host iniciado en socket local 8910. Servidor autoritativo listo.`, 'ok');
+        }
+
+        function simClient() {
+            if (!simState.hostActive) return;
+            
+            animatePacket('to-client', () => {
+                simState.clientConnected = true;
+                document.getElementById('btn-sim-client').classList.add('active-client');
+                document.getElementById('btn-sim-rpc').disabled = false;
+                logSim(`[Peer 2] Conectado exitosamente al Host. Asignado NetworkID = 2.`, 'client');
+            });
+        }
+
+        function movePlayer(dx, dy) {
+            if (!simState.hostActive) {
+                logSim('Debe iniciar la red antes de enviar inputs de movimiento.', 'warn');
+                return;
+            }
+
+            if (simState.clientConnected) {
+                simState.p2.targetX = Math.max(20, Math.min(260, simState.p2.targetX + dx));
+                simState.p2.targetY = Math.max(20, Math.min(200, simState.p2.targetY + dy));
+                
+                const lag = parseInt(document.getElementById('sim-lag').value);
+                logSim(`[IsOwner P2] Input local procesado. Replicando a Server con ${lag}ms de ping.`, 'client');
+                animatePacket('to-host');
+            } else {
+                simState.p1.targetX = Math.max(20, Math.min(260, simState.p1.targetX + dx));
+                simState.p1.targetY = Math.max(20, Math.min(200, simState.p1.targetY + dy));
+                logSim(`[IsServer P1] Movimiento autoritativo del Host aplicado directo.`, 'ok');
+            }
+        }
+
+        function sendFireRPC() {
+            if (!simState.clientConnected) return;
+            logSim(`[Client -> ServerRPC] Solicitando ejecución de disparo en el servidor...`, 'client');
+            
+            animatePacket('to-host', () => {
+                logSim(`[Server] RPC Recibido y validado. Creando proyectil autoritativo y replicando por ClientRPC.`, 'ok');
+                simState.bullets.push({ x: simState.p2.x, y: simState.p2.y, vx: 4, vy: 0 });
+                animatePacket('to-client');
+            });
+        }
+
+        function resetSimulation() {
+            simState = {
+                hostActive: false,
+                clientConnected: false,
+                p1: { x: 50, y: 110, targetX: 50, targetY: 110, color: '#22c55e', label: 'P1 (Host)' },
+                p2: { x: 180, y: 110, targetX: 180, targetY: 110, color: '#a855f7', label: 'P2 (Client)' },
+                bullets: []
+            };
+            document.getElementById('btn-sim-host').classList.remove('active-host');
+            document.getElementById('btn-sim-client').classList.remove('active-client');
+            document.getElementById('btn-sim-client').disabled = true;
+            document.getElementById('btn-sim-rpc').disabled = true;
+            logSim('Simulador reseteado. Sockets cerrados.', 'warn');
+        }
+
+        function renderCanvas() {
+            const cHost = document.getElementById('canvas-host');
+            const cClient = document.getElementById('canvas-client');
+            if (!cHost || !cClient) return;
+
+            if (cHost.width !== cHost.clientWidth) {
+                cHost.width = cHost.clientWidth;
+                cHost.height = cHost.clientHeight;
+                cClient.width = cClient.clientWidth;
+                cClient.height = cClient.clientHeight;
+            }
+
+            const ctxH = cHost.getContext('2d');
+            const ctxC = cClient.getContext('2d');
+
+            const lerpFactor = parseFloat(document.getElementById('sim-lerp').value);
+
+            simState.p1.x += (simState.p1.targetX - simState.p1.x) * lerpFactor;
+            simState.p1.y += (simState.p1.targetY - simState.p1.y) * lerpFactor;
+
+            simState.p2.x += (simState.p2.targetX - simState.p2.x) * lerpFactor;
+            simState.p2.y += (simState.p2.targetY - simState.p2.y) * lerpFactor;
+
+            simState.bullets.forEach(b => b.x += b.vx);
+
+            function drawScene(ctx) {
+                ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                
+                ctx.strokeStyle = '#1e293b';
+                ctx.lineWidth = 1;
+                for (let x = 0; x < ctx.canvas.width; x += 20) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, ctx.canvas.height); ctx.stroke();
+                }
+                for (let y = 0; y < ctx.canvas.height; y += 20) {
+                    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(ctx.canvas.width, y); ctx.stroke();
+                }
+
+                if (!simState.hostActive) {
+                    ctx.fillStyle = '#64748b';
+                    ctx.font = '12px Inter';
+                    ctx.fillText('Servidor Offline. Haz clic en Start Host.', 20, ctx.canvas.height / 2);
+                    return;
+                }
+
+                ctx.fillStyle = simState.p1.color;
+                ctx.beginPath();
+                ctx.arc(simState.p1.x, simState.p1.y, 12, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#fff'; ctx.font = '10px Inter';
+                ctx.fillText(simState.p1.label, simState.p1.x - 22, simState.p1.y - 16);
+
+                if (simState.clientConnected) {
+                    ctx.fillStyle = simState.p2.color;
+                    ctx.beginPath();
+                    ctx.arc(simState.p2.x, simState.p2.y, 12, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.fillText(simState.p2.label, simState.p2.x - 24, simState.p2.y - 16);
+                }
+
+                ctx.fillStyle = '#f59e0b';
+                simState.bullets.forEach(b => {
+                    ctx.beginPath();
+                    ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            drawScene(ctxH);
+            drawScene(ctxC);
+
+            requestAnimationFrame(renderCanvas);
+        }
+
+        function togglePresentationMode() {
+            const modal = document.getElementById('pres-modal');
+            const isVisible = modal.style.display === 'block';
+
+            if (!isVisible) {
+                const name = document.getElementById('student-name').value || 'Sin Registrar';
+                document.getElementById('pres-author').textContent = `Estudiante: ${name}`;
+                document.getElementById('pres-engine-tag').textContent = `${currentEngine.toUpperCase()} ARCHITECTURE REPORT`;
+
+                const pitch = document.getElementById('t1-pitch').value || 'No definido';
+                const type = document.getElementById('t1-type').value || 'No seleccionado';
+                const dyn = document.getElementById('t1-dynamic').value || 'No seleccionado';
+                const topo = document.getElementById('t1-topology').value || 'No seleccionado';
+                
+                document.getElementById('pres-diag-1').innerHTML = `
+                    <p><strong>Pitch:</strong> ${pitch}</p>
+                    <p><strong>Tipo:</strong> ${type} | <strong>Dinámica:</strong> ${dyn} | <strong>Topología:</strong> ${topo}</p>
+                `;
+
+                const t2Ok = (currentEngine === 'unity') ? 
+                    (document.getElementById('chk-u-ngo').checked && document.getElementById('chk-u-mpm').checked) :
+                    (document.getElementById('chk-g-enet').checked && document.getElementById('chk-g-instances').checked);
+                
+                document.getElementById('pres-diag-2').innerHTML = t2Ok ? 
+                    '<span style="color:var(--accent-green)">🟢 Paquetes y Entorno de Motor Verificados</span>' : 
+                    '<span style="color:var(--accent-red)">🔴 Configuración Incompleta de Paquetes</span>';
+
+                const { correctCount, totalCount } = validateCodeAnswers();
+                const codeOk = (correctCount === totalCount && totalCount > 0);
+                
+                document.getElementById('pres-diag-3').innerHTML = codeOk ? 
+                    '<span style="color:var(--accent-green)">🟢 NetworkManager Autoritativo Correcto</span>' : 
+                    '<span style="color:var(--accent-red)">🔴 Errores de sintaxis en NetworkManager</span>';
+                
+                document.getElementById('pres-diag-4').innerHTML = codeOk ? 
+                    '<span style="color:var(--accent-green)">🟢 Verificación de Autoridad Local Correcta</span>' : 
+                    '<span style="color:var(--accent-red)">🔴 Errores de sintaxis en filtro de autoridad</span>';
+
+                const notes = document.getElementById('t5-notes').value || 'Sin observaciones.';
+                const t5Multi = document.getElementById('chk-test-multi').checked;
+                const t5Auth = document.getElementById('chk-test-auth').checked;
+                
+                document.getElementById('pres-diag-5').innerHTML = `
+                    <p><strong>Multinstancias:</strong> ${t5Multi ? 'Validadas ✅' : 'Pendientes ❌'} | <strong>Autoridad comprobada:</strong> ${t5Auth ? 'Sí ✅' : 'No ❌'}</p>
+                    <p><strong>Observaciones:</strong> ${notes}</p>
+                `;
+
+                const stepsCount = (currentEngine === 'unity') ? 
+                    [1,2,3,4,5].filter(i => document.getElementById(`chk-u-step${i}`).checked).length :
+                    [1,2,3,4,5].filter(i => document.getElementById(`chk-g-step${i}`).checked).length;
+                
+                const repoLink = document.getElementById('t6-repository').value || 'Sin enlace consignado';
+
+                document.getElementById('pres-diag-6').innerHTML = `
+                    <p><strong>Pasos en Motor Completados:</strong> ${stepsCount} de 5 ${stepsCount === 5 ? '✅' : '⚠️'}</p>
+                    <p><strong>Repositorio de Proyecto:</strong> <code>${repoLink}</code></p>
+                `;
+
+                document.getElementById('pres-progress-val').textContent = document.getElementById('completion-status').textContent;
+                modal.style.display = 'block';
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') return;
+            if (e.key === 'ArrowUp') movePlayer(0, -10);
+            if (e.key === 'ArrowDown') movePlayer(0, 10);
+            if (e.key === 'ArrowLeft') movePlayer(-10, 0);
+            if (e.key === 'ArrowRight') movePlayer(10, 0);
+            if (e.key === ' ' || e.key === 'f') sendFireRPC();
+        });
+
+        window.onload = () => {
+            loadData();
+            updateProgress();
+            renderCanvas();
+        };
+    </script>
+</body>
+</html>
