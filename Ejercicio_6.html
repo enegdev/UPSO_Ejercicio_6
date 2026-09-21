@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio de la Semana 6 - IDE Multiplayer Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Clean Dark Palette */
+            --bg-color: #0f1117;
+            --panel-bg: #181b24;
+            --card-bg: #212532;
+            --editor-bg: #13151f;
+            --border-color: #2e3447;
+            
+            --accent-godot: #478cbf;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #22c55e;
+            --error: #ef4444;
+            
+            --text-main: #cbd5e1;
+            --text-bright: #ffffff;
+            --text-muted: #94a3b8;
+
+            /* Code Syntax Colors */
+            --syn-kw: #ff7b72;       
+            --syn-fn: #79c0ff;       
+            --syn-type: #ffa657;     
+            --syn-str: #a5d6ff;      
+            --syn-cm: #8b949e;       
+            --syn-num: #79c0ff;      
+            --syn-var: #d2a8ff;      
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 28px 16px; 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+        /* Header / Badge */
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 4px;
+        }
+
+        .week-badge {
+            background: #1e1b4b;
+            color: #818cf8;
+            border: 1px solid #4338ca;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Engine Switcher Tabs */
+        .engine-tabs { display: flex; gap: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+        .tab-btn { 
+            background: var(--card-bg); border: 1px solid var(--border-color); 
+            color: var(--text-muted); padding: 12px 24px; border-radius: 8px; 
+            cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 8px; font-family: inherit;
+        }
+        .tab-btn:hover { color: var(--text-bright); background: #282d3d; }
+        .tab-btn.active-godot { background: #1a2b3c; color: #60a5fa; border-color: var(--accent-godot); box-shadow: 0 0 14px rgba(71, 140, 191, 0.25); }
+        .tab-btn.active-unity { background: #2d2d2d; color: #ffffff; border-color: #ffffff88; box-shadow: 0 0 14px rgba(255, 255, 255, 0.15); }
+
+        .panel { background: var(--panel-bg); border-radius: 12px; padding: 24px; border: 1px solid var(--border-color); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        .section-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; color: var(--text-bright); }
+
+        /* IDE Code Window Frame */
+        .ide-window { background: var(--editor-bg); border-radius: 10px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 6px 20px rgba(0,0,0,0.4); }
+        .ide-header { background: #0c0d14; padding: 12px 18px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); }
+        .ide-dots { display: flex; gap: 8px; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
+        .ide-filename { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; font-family: 'Fira Code', monospace; }
+        
+        .ide-body { 
+            padding: 20px; 
+            font-family: 'Fira Code', 'Consolas', monospace; 
+            font-size: 0.9rem; 
+            position: relative; 
+            overflow-x: auto; 
+            white-space: pre; 
+            line-height: 1.7; 
+            max-height: 580px; 
+            overflow-y: auto; 
+        }
+
+        /* Inline Input in Code */
+        .code-input-wrapper { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; margin: 0 4px; }
+        .inline-input {
+            background: #090a0f; border: 1.5px solid var(--primary); color: #4ade80;
+            font-family: 'Fira Code', monospace; font-size: 0.88rem; padding: 4px 10px; border-radius: 6px;
+            outline: none; min-width: 210px; transition: all 0.2s ease; font-weight: 500;
+        }
+        .inline-input:focus { border-color: #818cf8; box-shadow: 0 0 10px rgba(99, 102, 241, 0.35); }
+        .inline-input.correct { border-color: var(--success); background: #14532d33; color: #4ade80; font-weight: 600; }
+        .inline-input.wrong { border-color: var(--error); background: #7f1d1d33; animation: shake 0.3s ease; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .btn-check-input { background: var(--primary); color: white; border: none; padding: 4px 10px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.8rem; font-family: 'Inter', sans-serif; }
+        .btn-check-input:hover { background: var(--primary-hover); }
+
+        /* Action Toolbar */
+        .ide-toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 12px; }
+        .doc-link { color: #60a5fa; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+        .doc-link:hover { text-decoration: underline; }
+        
+        .copy-btn { 
+            background: #22c55e; color: #052e16; border: none; padding: 10px 18px; 
+            border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem; transition: 0.2s;
+            font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .copy-btn:hover { background: #4ade80; }
+
+        /* Checklist Specific */
+        .checklist { display: flex; flex-direction: column; gap: 12px; }
+        .check-card { background: var(--card-bg); padding: 16px 20px; border-radius: 8px; border: 1px solid var(--border-color); display: flex; gap: 16px; align-items: flex-start; transition: 0.2s; cursor: pointer; }
+        .check-card:hover { background: #2a2f40; border-color: rgba(255,255,255,0.15); }
+        .check-card input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px; }
+        .check-content { display: flex; flex-direction: column; gap: 4px; }
+        .check-title { font-size: 0.98rem; font-weight: 700; color: var(--text-bright); }
+        .check-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+        .check-card.completed { opacity: 0.5; text-decoration: line-through; }
+
+        /* Delivery Card */
+        .delivery-card { background: var(--editor-bg); border-radius: 10px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
+        .delivery-group { display: flex; flex-direction: column; gap: 10px; }
+        .delivery-label { font-size: 0.95rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
+
+        .drive-btn {
+            background: #10b981; color: #042f2e; font-weight: 700; padding: 12px 20px;
+            border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; transition: 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            align-self: flex-start;
+        }
+        .drive-btn:hover { background: #34d399; transform: translateY(-1px); }
+
+        .input-subtext { font-size: 0.85rem; color: var(--text-muted); }
+
+        /* Syntax Highlight Classes */
+        .kw { color: var(--syn-kw); font-weight: 600; }
+        .fn { color: var(--syn-fn); }
+        .type { color: var(--syn-type); }
+        .str { color: var(--syn-str); }
+        .cm { color: var(--syn-cm); font-style: italic; }
+        .num { color: var(--syn-num); }
+        .var { color: var(--syn-var); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header General -->
+    <div class="main-header">
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-bright);">IDE Multiplayer Studio</h1>
+        <span class="week-badge">📅 Ejercicio de la Semana 6</span>
+    </div>
+
+    <!-- Engine Switcher Tabs -->
+    <div class="engine-tabs">
+        <button class="tab-btn active-godot" id="btn-godot" onclick="switchEngine('godot')">
+            <span>⚙️ Godot 4 (GDScript)</span>
+        </button>
+        <button class="tab-btn" id="btn-unity" onclick="switchEngine('unity')">
+            <span>🎮 Unity (Netcode C#)</span>
+        </button>
+    </div>
+
+    <!-- Section 1: Complete Code Exercise -->
+    <div class="panel">
+        <div class="section-title">
+            <span>1. Código Fuente con Desafíos (Resuelve las casillas)</span>
+            <button class="copy-btn" id="copy-code-btn" onclick="copyFullCode()">📋 Copiar Script Resuelto</button>
+        </div>
+
+        <div class="ide-window">
+            <div class="ide-header">
+                <div class="ide-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+                <div class="ide-filename" id="ide-filename">RedBasica.gd</div>
+                <div></div>
+            </div>
+            <div class="ide-body" id="code-display"></div>
+        </div>
+
+        <div class="ide-toolbar">
+            <a id="doc-link-btn" href="#" target="_blank" class="doc-link">📖 Consultar Documentación Oficial ↗</a>
+            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/3 Desafíos</span>
+        </div>
+    </div>
+
+    <!-- Section 2: Checklist for Engine Configuration -->
+    <div class="panel">
+        <div class="section-title">2. Pasos de Configuración en el Editor (Ubicación del Script y Configuración)</div>
+        <div class="checklist" id="checklist-container"></div>
+    </div>
+
+    <!-- Section 3: Delivery via Google Drive -->
+    <div class="panel">
+        <div class="section-title">3. Entrega del Proyecto</div>
+        <div class="delivery-card">
+            <div class="delivery-group">
+                <label class="delivery-label">Sube la Build ejecutable (.exe) de tu proyecto</label>
+                <p class="input-subtext" style="font-size: 0.9rem; color: var(--text-bright);">
+                    Exporta la build en formato <strong>.exe</strong> (junto a sus archivos/carpetas de datos adjuntos), comprímela en un archivo <strong>.zip</strong> o <strong>.rar</strong> y súbela a la carpeta compartida en Google Drive.
+                </p>
+                <div style="margin-top: 8px;">
+                    <a href="https://drive.google.com/drive/folders/1mGelamoAHuc0POStiuySC-a-k4OLIDBB?usp=sharing" target="_blank" class="drive-btn">
+                        📂 Abrir Carpeta de Entrega en Google Drive ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentEngine = 'godot';
+
+    const engineData = {
+        godot: {
+            filename: 'RedBasica.gd',
+            docUrl: 'https://docs.godotengine.org/en/stable/classes/class_multiplayerspawner.html',
+            challenges: [
+                { id: 'g_ch1', target: '_al_spawnear_jugador' },
+                { id: 'g_ch2', target: 'escena_jugador.instantiate()' },
+                { id: 'g_ch3', target: 'spawner.spawn(1)' }
+            ],
+            codeTemplate: `<span class="kw">extends</span> <span class="type">Node</span>
+
+<span class="var">@export</span> <span class="kw">var</span> boton_host: <span class="type">Button</span>
+<span class="var">@export</span> <span class="kw">var</span> boton_cliente: <span class="type">Button</span>
+<span class="var">@export</span> <span class="kw">var</span> escena_jugador: <span class="type">PackedScene</span>
+
+<span class="kw">var</span> ip_servidor: <span class="type">String</span> = <span class="str">"127.0.0.1"</span>
+<span class="kw">var</span> puerto: <span class="type">int</span> = <span class="num">7777</span>
+<span class="kw">var</span> spawner: <span class="type">MultiplayerSpawner</span>
+
+<span class="kw">func</span> <span class="fn">_ready</span>() -&gt; <span class="type">void</span>:
+\t<span class="fn">_configurar_spawner</span>()
+\tboton_host.pressed.<span class="fn">connect</span>(crear_host)
+\tboton_cliente.pressed.<span class="fn">connect</span>(unirse_cliente)
+\tmultiplayer.peer_connected.<span class="fn">connect</span>(_al_conectar_peer)
+
+<span class="kw">func</span> <span class="fn">_configurar_spawner</span>() -&gt; <span class="type">void</span>:
+\tspawner = <span class="type">MultiplayerSpawner</span>.<span class="fn">new</span>()
+\t<span class="fn">add_child</span>(spawner)
+\tspawner.spawn_path = <span class="type">NodePath</span>(<span class="str">".."</span>)
+\t<span class="cm"># DESAFÍO 1: Asignar la función callback de spawning</span>
+\tspawner.spawn_function = [INPUT_g_ch1]
+
+<span class="kw">func</span> <span class="fn">_al_spawnear_jugador</span>(id: <span class="type">int</span>) -&gt; <span class="type">Node</span>:
+\t<span class="kw">if</span> escena_jugador == <span class="kw">null</span>: <span class="kw">return null</span>
+\t<span class="cm"># DESAFÍO 2: Instanciar la escena del jugador asignada</span>
+\t<span class="kw">var</span> jugador = [INPUT_g_ch2]
+\tjugador.name = <span class="type">str</span>(id)
+\t<span class="kw">return</span> jugador
+
+<span class="kw">func</span> <span class="fn">crear_host</span>() -&gt; <span class="type">void</span>:
+\t<span class="kw">var</span> peer = <span class="type">ENetMultiplayerPeer</span>.<span class="fn">new</span>()
+\tpeer.<span class="fn">create_server</span>(puerto)
+\tmultiplayer.multiplayer_peer = peer
+\t<span class="cm"># DESAFÍO 3: Generar spawn en red para el Host (ID = 1)</span>
+\t[INPUT_g_ch3]
+
+<span class="kw">func</span> <span class="fn">unirse_cliente</span>() -&gt; <span class="type">void</span>:
+\t<span class="kw">var</span> peer = <span class="type">ENetMultiplayerPeer</span>.<span class="fn">new</span>()
+\tpeer.<span class="fn">create_client</span>(ip_servidor, puerto)
+\tmultiplayer.multiplayer_peer = peer
+
+<span class="kw">func</span> <span class="fn">_al_conectar_peer</span>(id: <span class="type">int</span>) -&gt; <span class="type">void</span>:
+\t<span class="kw">if</span> multiplayer.<span class="fn">is_server</span>():
+\t\tspawner.<span class="fn">spawn</span>(id)`,
+            fullCode: `extends Node
+
+@export var boton_host: Button
+@export var boton_cliente: Button
+@export var escena_jugador: PackedScene
+
+var ip_servidor: String = "127.0.0.1"
+var puerto: int = 7777
+var spawner: MultiplayerSpawner
+
+func _ready() -> void:
+	_configurar_spawner()
+	boton_host.pressed.connect(crear_host)
+	boton_cliente.pressed.connect(unirse_cliente)
+	multiplayer.peer_connected.connect(_al_conectar_peer)
+
+func _configurar_spawner() -> void:
+	spawner = MultiplayerSpawner.new()
+	add_child(spawner)
+	spawner.spawn_path = NodePath("..")
+	spawner.spawn_function = _al_spawnear_jugador
+
+func _al_spawnear_jugador(id: int) -> Node:
+	if escena_jugador == null: return null
+	var jugador = escena_jugador.instantiate()
+	jugador.name = str(id)
+	return jugador
+
+func crear_host() -> void:
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_server(puerto)
+	multiplayer.multiplayer_peer = peer
+	spawner.spawn(1)
+
+func unirse_cliente() -> void:
+	var peer = ENetMultiplayerPeer.new()
+	peer.create_client(ip_servidor, puerto)
+	multiplayer.multiplayer_peer = peer
+
+func _al_conectar_peer(id: int) -> void:
+	if multiplayer.is_server():
+		spawner.spawn(id)`,
+            checklist: [
+                {
+                    title: "1. Crear el nodo de Red y Adjuntar el Script",
+                    desc: "En la Escena Principal (Main Scene), crea un nodo tipo Node (llámalo 'RedManager'). Guarda el script resuelto como 'RedBasica.gd' y ajústalo/arrástralo sobre ese nodo 'RedManager'."
+                },
+                {
+                    title: "2. Crear la Escena del Jugador (Jugador.tscn)",
+                    desc: "Crea una escena independiente para el personaje principal (CharacterBody2D/3D), añade sus nodos visuales y guárdala en tu carpeta de archivos como 'Jugador.tscn'."
+                },
+                {
+                    title: "3. Preparar Interfaz de Usuario (UI)",
+                    desc: "En tu escena principal, crea dos nodos Button ('BotonHost' y 'BotonCliente') dentro de un CanvasLayer o Control para verlos en pantalla."
+                },
+                {
+                    title: "4. Vincular Variables en el Inspector",
+                    desc: "Haz clic en el nodo 'RedManager' para abrir el Inspector. Arrastra los nodos de los botones a 'Boton Host' y 'Boton Cliente', y arrastra el archivo 'Jugador.tscn' a la casilla 'Escena Jugador'."
+                },
+                {
+                    title: "5. Probar Ejecución Multi-Instancia",
+                    desc: "Dirígete al menú superior: 'Depurar -> Ejecutar Varias Instancias -> 2 Instancias' y presiona Play para testear Host y Cliente simultáneamente."
+                }
+            ]
+        },
+        unity: {
+            filename: 'RedBasica.cs',
+            docUrl: 'https://docs-multiplayer.unity3d.com/netcode/current/about/index.html',
+            challenges: [
+                { id: 'u_ch1', target: 'NetworkManager.Singleton.StartHost()' },
+                { id: 'u_ch2', target: 'netObj.Spawn()' },
+                { id: 'u_ch3', target: 'NetworkManager.Singleton.IsServer' }
+            ],
+            codeTemplate: `<span class="kw">using</span> UnityEngine;
+<span class="kw">using</span> UnityEngine.UI;
+<span class="kw">using</span> Unity.Netcode;
+
+<span class="kw">public class</span> <span class="type">RedBasica</span> : <span class="type">MonoBehaviour</span>
+{
+    [<span class="var">SerializeField</span>] <span class="kw">private</span> <span class="type">Button</span> botonHost, botonCliente;
+    [<span class="var">SerializeField</span>] <span class="kw">private</span> <span class="type">GameObject</span> prefabJugador;
+
+    <span class="kw">private void</span> <span class="fn">Start</span>()
+    {
+        botonHost.onClick.<span class="fn">AddListener</span>(CrearHost);
+        botonCliente.onClick.<span class="fn">AddListener</span>(UnirseCliente);
+        <span class="kw">if</span> (<span class="type">NetworkManager</span>.Singleton != <span class="kw">null</span>)
+            <span class="type">NetworkManager</span>.Singleton.OnClientConnectedCallback += AlConectarCliente;
+    }
+
+    <span class="kw">public void</span> <span class="fn">CrearHost</span>()
+    {
+        <span class="cm">// DESAFÍO 1: Iniciar el NetworkManager en modo Host</span>
+        [INPUT_u_ch1];
+    }
+
+    <span class="kw">public void</span> <span class="fn">UnirseCliente</span>()
+    {
+        <span class="type">NetworkManager</span>.Singleton.<span class="fn">StartClient</span>();
+    }
+
+    <span class="kw">private void</span> <span class="fn">AlConectarCliente</span>(<span class="type">ulong</span> id)
+    {
+        <span class="cm">// DESAFÍO 3: Comprobar si la instancia actual es el Servidor</span>
+        <span class="kw">if</span> ([INPUT_u_ch3])
+            <span class="fn">InstanciarJugador</span>(id);
+    }
+
+    <span class="kw">private void</span> <span class="fn">InstanciarJugador</span>(<span class="type">ulong</span> id)
+    {
+        <span class="type">GameObject</span> instancia = <span class="fn">Instantiate</span>(prefabJugador, <span class="type">Vector3</span>.zero, <span class="type">Quaternion</span>.identity);
+        <span class="type">NetworkObject</span> netObj = instancia.<span class="fn">GetComponent</span>&lt;<span class="type">NetworkObject</span>&gt;();
+        <span class="cm">// DESAFÍO 2: Sincronizar e instanciar el NetworkObject en la red</span>
+        [INPUT_u_ch2];
+    }
+}`,
+            fullCode: `using UnityEngine;
+using UnityEngine.UI;
+using Unity.Netcode;
+
+public class RedBasica : MonoBehaviour
+{
+    [SerializeField] private Button botonHost, botonCliente;
+    [SerializeField] private GameObject prefabJugador;
+
+    private void Start()
+    {
+        botonHost.onClick.AddListener(CrearHost);
+        botonCliente.onClick.AddListener(UnirseCliente);
+        if (NetworkManager.Singleton != null)
+            NetworkManager.Singleton.OnClientConnectedCallback += AlConectarCliente;
+    }
+
+    public void CrearHost()
+    {
+        NetworkManager.Singleton.StartHost();
+    }
+
+    public void UnirseCliente()
+    {
+        NetworkManager.Singleton.StartClient();
+    }
+
+    private void AlConectarCliente(ulong id)
+    {
+        if (NetworkManager.Singleton.IsServer)
+            InstanciarJugador(id);
+    }
+
+    private void InstanciarJugador(ulong id)
+    {
+        GameObject instancia = Instantiate(prefabJugador, Vector3.zero, Quaternion.identity);
+        NetworkObject netObj = instancia.GetComponent<NetworkObject>();
+        netObj.Spawn();
+    }
+}`,
+            checklist: [
+                {
+                    title: "1. Crear el GameObject NetworkManager",
+                    desc: "En la jerarquía de Unity, crea un objeto vacío denominado 'NetworkManager' y agrégale los componentes de Unity 'NetworkManager' y 'UnityTransport'."
+                },
+                {
+                    title: "2. Guardar y Adjuntar el Script C#",
+                    desc: "Crea un archivo llamado 'RedBasica.cs' en la carpeta Assets. Arrastra el script directamente dentro del GameObject 'NetworkManager' de la Jerarquía (o usa el botón Add Component -> RedBasica)."
+                },
+                {
+                    title: "3. Configurar el Prefab del Jugador",
+                    desc: "Crea tu personaje, añade el componente 'NetworkObject' a su GameObject y guárdalo dentro de la carpeta Assets/Prefabs."
+                },
+                {
+                    title: "4. Registrar Prefabs en NetworkManager",
+                    desc: "Selecciona 'NetworkManager', busca el componente NetworkManager oficial y añade tu Prefab de Jugador dentro de la lista 'NetworkPrefabs'."
+                },
+                {
+                    title: "5. Asignar Referencias en el Inspector",
+                    desc: "En el componente 'RedBasica' del GameObject NetworkManager, arrastra tus botones UI a las casillas 'Boton Host' y 'Boton Cliente', y tu Prefab a 'Prefab Jugador'."
+                },
+                {
+                    title: "6. Compilar y Probar la Build",
+                    desc: "Haz un Build ejecutable (Standalone). Abre el ejecutable como Host y prueba conectarte desde el Editor presionando Cliente."
+                }
+            ]
+        }
+    };
+
+    function switchEngine(engine) {
+        currentEngine = engine;
+        
+        document.getElementById('btn-godot').className = `tab-btn ${engine === 'godot' ? 'active-godot' : ''}`;
+        document.getElementById('btn-unity').className = `tab-btn ${engine === 'unity' ? 'active-unity' : ''}`;
+
+        const data = engineData[engine];
+        document.getElementById('ide-filename').innerText = data.filename;
+        document.getElementById('doc-link-btn').href = data.docUrl;
+
+        renderCodeExercise();
+        renderChecklist();
+        updateProgress();
+    }
+
+    function renderCodeExercise() {
+        const data = engineData[currentEngine];
+        let html = data.codeTemplate;
+
+        data.challenges.forEach((ch) => {
+            const inputHTML = `<span class="code-input-wrapper"><input type="text" id="${ch.id}" class="inline-input" placeholder="[ TU CÓDIGO AQUÍ ]" autocomplete="off" spellcheck="false" onkeypress="handleKeyPress(event, '${ch.id}')"><button class="btn-check-input" onclick="verifySingleInput('${ch.id}')">✓</button></span>`;
+            html = html.replace(`[INPUT_${ch.id}]`, inputHTML);
+        });
+
+        document.getElementById('code-display').innerHTML = html;
+    }
+
+    function handleKeyPress(e, inputId) {
+        if (e.key === 'Enter') verifySingleInput(inputId);
+    }
+
+    function verifySingleInput(inputId) {
+        const inputEl = document.getElementById(inputId);
+        if (!inputEl) return;
+
+        const data = engineData[currentEngine];
+        const challenge = data.challenges.find(c => c.id === inputId);
+        if (!challenge) return;
+
+        const val = inputEl.value.trim().replace(/;\s*$/, '');
+        const target = challenge.target.replace(/;\s*$/, '');
+
+        if (val === target) {
+            inputEl.classList.remove('wrong');
+            inputEl.classList.add('correct');
+            inputEl.disabled = true;
+        } else {
+            inputEl.classList.remove('wrong');
+            void inputEl.offsetWidth;
+            inputEl.classList.add('wrong');
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const data = engineData[currentEngine];
+        let solved = 0;
+        data.challenges.forEach(ch => {
+            const el = document.getElementById(ch.id);
+            if (el && el.classList.contains('correct')) solved++;
+        });
+
+        document.getElementById('progress-text').innerText = `Progreso: ${solved}/${data.challenges.length} Desafíos`;
+    }
+
+    function copyFullCode() {
+        const data = engineData[currentEngine];
+        let solved = 0;
+        data.challenges.forEach(ch => {
+            const el = document.getElementById(ch.id);
+            if (el && el.classList.contains('correct')) solved++;
+        });
+
+        if (solved < data.challenges.length) {
+            alert("Resuelve primero los desafíos en el código para poder copiar el script completo.");
+            return;
+        }
+
+        navigator.clipboard.writeText(data.fullCode);
+        alert("📋 ¡Script resuelto copiado al portapapeles!");
+    }
+
+    function renderChecklist() {
+        const container = document.getElementById('checklist-container');
+        container.innerHTML = '';
+        
+        engineData[currentEngine].checklist.forEach((item) => {
+            const card = document.createElement('label');
+            card.className = 'check-card';
+            card.innerHTML = `
+                <input type="checkbox" onchange="toggleCheck(this)">
+                <div class="check-content">
+                    <span class="check-title">${item.title}</span>
+                    <span class="check-desc">${item.desc}</span>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function toggleCheck(checkbox) {
+        if (checkbox.checked) checkbox.parentElement.classList.add('completed');
+        else checkbox.parentElement.classList.remove('completed');
+    }
+
+    // Inicializar por defecto
+    switchEngine('godot');
+</script>
+
+</body>
+</html>
