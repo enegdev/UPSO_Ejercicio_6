@@ -154,7 +154,7 @@
 
         /* Delivery Card */
         .delivery-card { background: var(--editor-bg); border-radius: 10px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; gap: 20px; }
-        .delivery-group { display: flex; flex-direction: column; gap: 10px; }
+        .delivery-group { display: flex; flex-direction: column; gap: 12px; }
         .delivery-label { font-size: 0.95rem; font-weight: 700; color: var(--text-bright); display: flex; align-items: center; gap: 8px; }
 
         .drive-btn {
@@ -233,12 +233,41 @@
                 <p class="input-subtext" style="font-size: 0.9rem; color: var(--text-bright);">
                     Exporta la build en formato <strong>.exe</strong> (junto a sus archivos/carpetas de datos adjuntos), comprímela en un archivo <strong>.zip</strong> o <strong>.rar</strong> y súbela a la carpeta compartida en Google Drive.
                 </p>
+                <!-- Formato de Nombre -->
+                <div style="background: rgba(99, 102, 241, 0.1); border-left: 3px solid var(--primary); padding: 10px 14px; border-radius: 6px; font-size: 0.88rem; color: var(--text-main);">
+                    📌 <strong>Formato de nombre requerido:</strong> <code style="color: #4ade80; font-family: 'Fira Code', monospace;">Apellido_Nombre_Semana6.zip</code>
+                </div>
                 <div style="margin-top: 8px;">
                     <a href="https://drive.google.com/drive/folders/1mGelamoAHuc0POStiuySC-a-k4OLIDBB?usp=sharing" target="_blank" class="drive-btn">
                         📂 Abrir Carpeta de Entrega en Google Drive ↗
                     </a>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Section 4: Troubleshooting / FAQ General -->
+    <div class="panel">
+        <div class="section-title">4. Preguntas Frecuentes y Ayuda</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <details style="background: var(--card-bg); padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer;">
+                <summary style="font-weight: 600; color: var(--text-bright);">📦 ¿Qué archivos debo incluir en el .zip al exportar la Build?</summary>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 10px; line-height: 1.6;">
+                    El archivo ejecutable <code>.exe</code> necesita obligatoriamente sus dependencias adjuntas. En <strong>Unity</strong> debes incluir la carpeta <code>NombreJuego_Data</code> y el archivo <code>UnityPlayer.dll</code>. En <strong>Godot</strong> debes incluir el archivo de paquetes <code>.pck</code>. Comprime el ejecutable junto con sus archivos/carpetas en la raíz de tu <code>.zip</code>.
+                </p>
+            </details>
+            <details style="background: var(--card-bg); padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer;">
+                <summary style="font-weight: 600; color: var(--text-bright);">🌐 ¿Cómo pruebo la conexión multijugador en una misma PC?</summary>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 10px; line-height: 1.6;">
+                    Debes ejecutar dos instancias simultáneas del proyecto. En <strong>Godot</strong> puedes ir al menú <em>Depurar -> Ejecutar Varias Instancias -> 2 Instancias</em>. En <strong>Unity</strong> puedes abrir una instancia en el Editor y otra mediante el ejecutable <code>.exe</code>. En ambos casos, inicia uno como <strong>Host</strong> y el otro como <strong>Cliente</strong> conectándote a la dirección de red local <code>127.0.0.1</code> (localhost).
+                </p>
+            </details>
+            <details style="background: var(--card-bg); padding: 14px 18px; border-radius: 8px; border: 1px solid var(--border-color); cursor: pointer;">
+                <summary style="font-weight: 600; color: var(--text-bright);">🛡️ ¿Qué hago si el Firewall de Windows bloquea mi aplicación?</summary>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 10px; line-height: 1.6;">
+                    Al abrir la Build por primera vez, el Firewall de Windows te solicitará permisos para abrir los puertos de red. Haz clic en <strong>"Permitir acceso"</strong> en redes privadas. Si la conexión falla, asegúrate de que ambas instancias estén utilizando exactamente el mismo puerto de comunicación en el código.
+                </p>
+            </details>
         </div>
     </div>
 </div>
@@ -459,7 +488,7 @@ public class RedBasica : MonoBehaviour
             checklist: [
                 {
                     title: "1. Crear el GameObject NetworkManager",
-                    desc: "En la jerarquía de Unity, crea un objeto vacío denominado 'NetworkManager' y agrégale los componentes de Unity 'NetworkManager' y 'UnityTransport'."
+                    desc: "En la jerarquía de Unity, crea un objeto vacío denominado 'NetworkManager' y agrándole los componentes de Unity 'NetworkManager' y 'UnityTransport'."
                 },
                 {
                     title: "2. Guardar y Adjuntar el Script C#",
