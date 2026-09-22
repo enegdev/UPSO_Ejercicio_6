@@ -105,7 +105,7 @@
             overflow-x: auto; 
             white-space: pre; 
             line-height: 1.7; 
-            max-height: 580px; 
+            max-height: 650px; 
             overflow-y: auto; 
         }
 
@@ -114,7 +114,7 @@
         .inline-input {
             background: #090a0f; border: 1.5px solid var(--primary); color: #4ade80;
             font-family: 'Fira Code', monospace; font-size: 0.88rem; padding: 4px 10px; border-radius: 6px;
-            outline: none; min-width: 210px; transition: all 0.2s ease; font-weight: 500;
+            outline: none; min-width: 310px; transition: all 0.2s ease; font-weight: 500;
         }
         .inline-input:focus { border-color: #818cf8; box-shadow: 0 0 10px rgba(99, 102, 241, 0.35); }
         .inline-input.correct { border-color: var(--success); background: #14532d33; color: #4ade80; font-weight: 600; }
@@ -199,7 +199,7 @@
     <!-- Section 1: Complete Code Exercise -->
     <div class="panel">
         <div class="section-title">
-            <span>1. Código Fuente con Desafíos (Resuelve las casillas)</span>
+            <span>1. Código Fuente con Desafíos (Completa las 6 casillas)</span>
             <button class="copy-btn" id="copy-code-btn" onclick="copyFullCode()">📋 Copiar Script Resuelto</button>
         </div>
 
@@ -214,13 +214,13 @@
 
         <div class="ide-toolbar">
             <a id="doc-link-btn" href="#" target="_blank" class="doc-link">📖 Consultar Documentación Oficial ↗</a>
-            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/3 Desafíos</span>
+            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/6 Desafíos</span>
         </div>
     </div>
 
     <!-- Section 2: Checklist for Engine Configuration -->
     <div class="panel">
-        <div class="section-title">2. Pasos de Configuración en el Editor (Ubicación del Script y Configuración)</div>
+        <div class="section-title">2. Pasos de Configuración en el Editor</div>
         <div class="checklist" id="checklist-container"></div>
     </div>
 
@@ -253,7 +253,10 @@
             challenges: [
                 { id: 'g_ch1', target: '_al_spawnear_jugador' },
                 { id: 'g_ch2', target: 'escena_jugador.instantiate()' },
-                { id: 'g_ch3', target: 'spawner.spawn(1)' }
+                { id: 'g_ch3', target: 'peer.create_server(puerto)' },
+                { id: 'g_ch4', target: 'multiplayer.multiplayer_peer = peer' },
+                { id: 'g_ch5', target: 'spawner.spawn(1)' },
+                { id: 'g_ch6', target: 'peer.create_client(ip_servidor, puerto)' }
             ],
             codeTemplate: `<span class="kw">extends</span> <span class="type">Node</span>
 
@@ -280,21 +283,24 @@
 
 <span class="kw">func</span> <span class="fn">_al_spawnear_jugador</span>(id: <span class="type">int</span>) -&gt; <span class="type">Node</span>:
 \t<span class="kw">if</span> escena_jugador == <span class="kw">null</span>: <span class="kw">return null</span>
-\t<span class="cm"># DESAFÍO 2: Instanciar la escena del jugador asignada</span>
+\t<span class="cm"># DESAFÍO 2: Instanciar la escena del jugador cargada</span>
 \t<span class="kw">var</span> jugador = [INPUT_g_ch2]
 \tjugador.name = <span class="type">str</span>(id)
 \t<span class="kw">return</span> jugador
 
 <span class="kw">func</span> <span class="fn">crear_host</span>() -&gt; <span class="type">void</span>:
 \t<span class="kw">var</span> peer = <span class="type">ENetMultiplayerPeer</span>.<span class="fn">new</span>()
-\tpeer.<span class="fn">create_server</span>(puerto)
-\tmultiplayer.multiplayer_peer = peer
-\t<span class="cm"># DESAFÍO 3: Generar spawn en red para el Host (ID = 1)</span>
+\t<span class="cm"># DESAFÍO 3: Crear el servidor en el puerto indicado</span>
 \t[INPUT_g_ch3]
+\t<span class="cm"># DESAFÍO 4: Asignar el peer al sistema multiplayer local</span>
+\t[INPUT_g_ch4]
+\t<span class="cm"># DESAFÍO 5: Generar spawn en red para el Host (ID = 1)</span>
+\t[INPUT_g_ch5]
 
 <span class="kw">func</span> <span class="fn">unirse_cliente</span>() -&gt; <span class="type">void</span>:
 \t<span class="kw">var</span> peer = <span class="type">ENetMultiplayerPeer</span>.<span class="fn">new</span>()
-\tpeer.<span class="fn">create_client</span>(ip_servidor, puerto)
+\t<span class="cm"># DESAFÍO 6: Inicializar el cliente conectándolo a la IP y Puerto</span>
+\t[INPUT_g_ch6]
 \tmultiplayer.multiplayer_peer = peer
 
 <span class="kw">func</span> <span class="fn">_al_conectar_peer</span>(id: <span class="type">int</span>) -&gt; <span class="type">void</span>:
@@ -345,23 +351,23 @@ func _al_conectar_peer(id: int) -> void:
             checklist: [
                 {
                     title: "1. Crear el nodo de Red y Adjuntar el Script",
-                    desc: "En la Escena Principal (Main Scene), crea un nodo tipo Node (llámalo 'RedManager'). Guarda el script resuelto como 'RedBasica.gd' y ajústalo/arrástralo sobre ese nodo 'RedManager'."
+                    desc: "En la Escena Principal, crea un nodo tipo Node llamado 'RedManager'. Guarda el script como 'RedBasica.gd' y asígnalo a ese nodo."
                 },
                 {
                     title: "2. Crear la Escena del Jugador (Jugador.tscn)",
-                    desc: "Crea una escena independiente para el personaje principal (CharacterBody2D/3D), añade sus nodos visuales y guárdala en tu carpeta de archivos como 'Jugador.tscn'."
+                    desc: "Crea una escena independiente para el personaje principal (CharacterBody2D/3D) y guárdala como 'Jugador.tscn'."
                 },
                 {
                     title: "3. Preparar Interfaz de Usuario (UI)",
-                    desc: "En tu escena principal, crea dos nodos Button ('BotonHost' y 'BotonCliente') dentro de un CanvasLayer o Control para verlos en pantalla."
+                    desc: "Crea dos nodos Button ('BotonHost' y 'BotonCliente') dentro de un Control o CanvasLayer."
                 },
                 {
                     title: "4. Vincular Variables en el Inspector",
-                    desc: "Haz clic en el nodo 'RedManager' para abrir el Inspector. Arrastra los nodos de los botones a 'Boton Host' y 'Boton Cliente', y arrastra el archivo 'Jugador.tscn' a la casilla 'Escena Jugador'."
+                    desc: "Selecciona 'RedManager'. En el Inspector arrastra los botones UI a 'Boton Host' y 'Boton Cliente', y 'Jugador.tscn' a 'Escena Jugador'."
                 },
                 {
                     title: "5. Probar Ejecución Multi-Instancia",
-                    desc: "Dirígete al menú superior: 'Depurar -> Ejecutar Varias Instancias -> 2 Instancias' y presiona Play para testear Host y Cliente simultáneamente."
+                    desc: "Ve a 'Depurar -> Ejecutar Varias Instancias -> 2 Instancias' y presiona Play para testear Host y Cliente."
                 }
             ]
         },
@@ -369,9 +375,12 @@ func _al_conectar_peer(id: int) -> void:
             filename: 'RedBasica.cs',
             docUrl: 'https://docs-multiplayer.unity3d.com/netcode/current/about/index.html',
             challenges: [
-                { id: 'u_ch1', target: 'NetworkManager.Singleton.StartHost()' },
-                { id: 'u_ch2', target: 'netObj.Spawn()' },
-                { id: 'u_ch3', target: 'NetworkManager.Singleton.IsServer' }
+                { id: 'u_ch1', target: 'botonHost.onClick.AddListener(CrearHost)' },
+                { id: 'u_ch2', target: 'NetworkManager.Singleton.StartHost()' },
+                { id: 'u_ch3', target: 'botonCliente.onClick.AddListener(UnirseCliente)' },
+                { id: 'u_ch4', target: 'NetworkManager.Singleton.StartClient()' },
+                { id: 'u_ch5', target: 'instancia.GetComponent<NetworkObject>()' },
+                { id: 'u_ch6', target: 'netObj.Spawn()' }
             ],
             codeTemplate: `<span class="kw">using</span> UnityEngine;
 <span class="kw">using</span> UnityEngine.UI;
@@ -384,36 +393,35 @@ func _al_conectar_peer(id: int) -> void:
 
     <span class="kw">private void</span> <span class="fn">Start</span>()
     {
-        botonHost.onClick.<span class="fn">AddListener</span>(CrearHost);
-        botonCliente.onClick.<span class="fn">AddListener</span>(UnirseCliente);
-        <span class="kw">if</span> (<span class="type">NetworkManager</span>.Singleton != <span class="kw">null</span>)
-            <span class="type">NetworkManager</span>.Singleton.OnClientConnectedCallback += AlConectarCliente;
+        <span class="cm">// DESAFÍO 1: Suscribir el botón Host para ejecutar CrearHost</span>
+        [INPUT_u_ch1];
+        <span class="cm">// DESAFÍO 3: Suscribir el botón Cliente para ejecutar UnirseCliente</span>
+        [INPUT_u_ch3];
     }
 
     <span class="kw">public void</span> <span class="fn">CrearHost</span>()
     {
-        <span class="cm">// DESAFÍO 1: Iniciar el NetworkManager en modo Host</span>
-        [INPUT_u_ch1];
+        <span class="cm">// DESAFÍO 2: Iniciar la red como Host desde el NetworkManager Singleton</span>
+        [INPUT_u_ch2];
+        <span class="fn">InstanciarJugador</span>();
     }
 
     <span class="kw">public void</span> <span class="fn">UnirseCliente</span>()
     {
-        <span class="type">NetworkManager</span>.Singleton.<span class="fn">StartClient</span>();
+        <span class="cm">// DESAFÍO 4: Iniciar la red en modo Cliente</span>
+        [INPUT_u_ch4];
     }
 
-    <span class="kw">private void</span> <span class="fn">AlConectarCliente</span>(<span class="type">ulong</span> id)
+    <span class="kw">private void</span> <span class="fn">InstanciarJugador</span>()
     {
-        <span class="cm">// DESAFÍO 3: Comprobar si la instancia actual es el Servidor</span>
-        <span class="kw">if</span> ([INPUT_u_ch3])
-            <span class="fn">InstanciarJugador</span>(id);
-    }
-
-    <span class="kw">private void</span> <span class="fn">InstanciarJugador</span>(<span class="type">ulong</span> id)
-    {
-        <span class="type">GameObject</span> instancia = <span class="fn">Instantiate</span>(prefabJugador, <span class="type">Vector3</span>.zero, <span class="type">Quaternion</span>.identity);
-        <span class="type">NetworkObject</span> netObj = instancia.<span class="fn">GetComponent</span>&lt;<span class="type">NetworkObject</span>&gt;();
-        <span class="cm">// DESAFÍO 2: Sincronizar e instanciar el NetworkObject en la red</span>
-        [INPUT_u_ch2];
+        <span class="kw">if</span> (<span class="type">NetworkManager</span>.Singleton.IsServer)
+        {
+            <span class="type">GameObject</span> instancia = <span class="fn">Instantiate</span>(prefabJugador, <span class="type">Vector3</span>.zero, <span class="type">Quaternion</span>.identity);
+            <span class="cm">// DESAFÍO 5: Obtener el componente NetworkObject del objeto creado</span>
+            <span class="type">NetworkObject</span> netObj = [INPUT_u_ch5];
+            <span class="cm">// DESAFÍO 6: Generar y sincronizar el objeto en la red</span>
+            [INPUT_u_ch6];
+        }
     }
 }`,
             fullCode: `using UnityEngine;
@@ -429,13 +437,12 @@ public class RedBasica : MonoBehaviour
     {
         botonHost.onClick.AddListener(CrearHost);
         botonCliente.onClick.AddListener(UnirseCliente);
-        if (NetworkManager.Singleton != null)
-            NetworkManager.Singleton.OnClientConnectedCallback += AlConectarCliente;
     }
 
     public void CrearHost()
     {
         NetworkManager.Singleton.StartHost();
+        InstanciarJugador();
     }
 
     public void UnirseCliente()
@@ -443,43 +450,40 @@ public class RedBasica : MonoBehaviour
         NetworkManager.Singleton.StartClient();
     }
 
-    private void AlConectarCliente(ulong id)
+    private void InstanciarJugador()
     {
         if (NetworkManager.Singleton.IsServer)
-            InstanciarJugador(id);
-    }
-
-    private void InstanciarJugador(ulong id)
-    {
-        GameObject instancia = Instantiate(prefabJugador, Vector3.zero, Quaternion.identity);
-        NetworkObject netObj = instancia.GetComponent<NetworkObject>();
-        netObj.Spawn();
+        {
+            GameObject instancia = Instantiate(prefabJugador, Vector3.zero, Quaternion.identity);
+            NetworkObject netObj = instancia.GetComponent<NetworkObject>();
+            netObj.Spawn();
+        }
     }
 }`,
             checklist: [
                 {
                     title: "1. Crear el GameObject NetworkManager",
-                    desc: "En la jerarquía de Unity, crea un objeto vacío denominado 'NetworkManager' y agrégale los componentes de Unity 'NetworkManager' y 'UnityTransport'."
+                    desc: "En la jerarquía de Unity, crea un objeto vacío denominado 'NetworkManager' y agrégale los componentes 'NetworkManager' y 'UnityTransport'."
                 },
                 {
                     title: "2. Guardar y Adjuntar el Script C#",
-                    desc: "Crea un archivo llamado 'RedBasica.cs' en la carpeta Assets. Arrastra el script directamente dentro del GameObject 'NetworkManager' de la Jerarquía (o usa el botón Add Component -> RedBasica)."
+                    desc: "Crea un archivo 'RedBasica.cs' en la carpeta Assets. Arrastra el script dentro del GameObject 'NetworkManager'."
                 },
                 {
                     title: "3. Configurar el Prefab del Jugador",
-                    desc: "Crea tu personaje, añade el componente 'NetworkObject' a su GameObject y guárdalo dentro de la carpeta Assets/Prefabs."
+                    desc: "Crea el personaje, agrégale el componente 'NetworkObject' y guárdalo dentro de Assets/Prefabs."
                 },
                 {
-                    title: "4. Registrar Prefabs en NetworkManager",
-                    desc: "Selecciona 'NetworkManager', busca el componente NetworkManager oficial y añade tu Prefab de Jugador dentro de la lista 'NetworkPrefabs'."
+                    title: "4. Registrar Prefab en NetworkManager",
+                    desc: "Selecciona 'NetworkManager', busca el componente oficial de Netcode y añade tu Prefab de Jugador a la lista 'NetworkPrefabs'."
                 },
                 {
                     title: "5. Asignar Referencias en el Inspector",
-                    desc: "En el componente 'RedBasica' del GameObject NetworkManager, arrastra tus botones UI a las casillas 'Boton Host' y 'Boton Cliente', y tu Prefab a 'Prefab Jugador'."
+                    desc: "En el componente 'RedBasica', arrastra los botones UI a 'Boton Host' y 'Boton Cliente', y el Prefab a 'Prefab Jugador'."
                 },
                 {
                     title: "6. Compilar y Probar la Build",
-                    desc: "Haz un Build ejecutable (Standalone). Abre el ejecutable como Host y prueba conectarte desde el Editor presionando Cliente."
+                    desc: "Genera la Build ejecutable (.exe). Abre la build como Host y prueba conectarte desde el Editor presionando Cliente."
                 }
             ]
         }
@@ -560,7 +564,7 @@ public class RedBasica : MonoBehaviour
         });
 
         if (solved < data.challenges.length) {
-            alert("Resuelve primero los desafíos en el código para poder copiar el script completo.");
+            alert("Resuelve primero todos los desafíos para poder copiar el script completo.");
             return;
         }
 
