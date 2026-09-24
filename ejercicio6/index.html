@@ -224,9 +224,37 @@
         <div class="checklist" id="checklist-container"></div>
     </div>
 
-    <!-- Section 3: Delivery via Google Drive -->
+    <!-- Section 3: Final Verification Checklist -->
     <div class="panel">
-        <div class="section-title">3. Entrega del Proyecto</div>
+        <div class="section-title">3. Checklist de Funcionamiento Esperado 🎯</div>
+        <div class="checklist">
+            <label class="check-card">
+                <input type="checkbox" onchange="toggleCheck(this)">
+                <div class="check-content">
+                    <span class="check-title">Conexión Multijugador 🌐</span>
+                    <span class="check-desc">Lograr la conexión de dos jugadores dentro de una misma partida.</span>
+                </div>
+            </label>
+            <label class="check-card">
+                <input type="checkbox" onchange="toggleCheck(this)">
+                <div class="check-content">
+                    <span class="check-title">Instanciación y Posición 📍</span>
+                    <span class="check-desc">Lograr la instanciación de dos jugadores en diferentes posiciones.</span>
+                </div>
+            </label>
+            <label class="check-card">
+                <input type="checkbox" onchange="toggleCheck(this)">
+                <div class="check-content">
+                    <span class="check-title">Identificador Visible 🆔</span>
+                    <span class="check-desc">Lograr poner el ID en pantalla de cada jugador.</span>
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <!-- Section 4: Delivery via Google Drive -->
+    <div class="panel">
+        <div class="section-title">4. Entrega del Proyecto</div>
         <div class="delivery-card">
             <div class="delivery-group">
                 <label class="delivery-label">Sube la Build ejecutable (.exe) + la carpeta de scripts de tu proyecto</label>
