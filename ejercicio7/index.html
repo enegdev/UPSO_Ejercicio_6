@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDE Studio - Ejercicio Interactivo</title>
+    
+    <!-- Fuentes Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #0f1117;
+            --panel-bg: #181b24;
+            --card-bg: #212532;
+            --editor-bg: #13151f;
+            --border-color: #2e3447;
+            
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --success: #22c55e;
+            --error: #ef4444;
+            
+            --text-main: #cbd5e1;
+            --text-bright: #ffffff;
+            --text-muted: #94a3b8;
+
+            /* Colores para resaltado de código */
+            --syn-kw: #ff7b72;       
+            --syn-fn: #79c0ff;       
+            --syn-type: #ffa657;     
+            --syn-str: #a5d6ff;      
+            --syn-cm: #8b949e;       
+            --syn-num: #79c0ff;      
+            --syn-var: #d2a8ff;      
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: var(--bg-color); 
+            color: var(--text-main); 
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            padding: 28px 16px; 
+            line-height: 1.6; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+
+        .main-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .week-badge {
+            background: #1e1b4b;
+            color: #818cf8;
+            border: 1px solid #4338ca;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 6px 14px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Card de Objetivo del Ejercicio */
+        .objective-card {
+            background: linear-gradient(135deg, #1e1b4b 0%, #181b24 100%);
+            border: 1px solid #4338ca;
+            border-left: 5px solid var(--primary);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .objective-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-bright);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .objective-text { font-size: 1rem; color: var(--text-bright); line-height: 1.6; }
+
+        .objective-subtext {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+        }
+
+        .engine-tabs { display: flex; gap: 12px; border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+        
+        .tab-btn { 
+            background: var(--card-bg); border: 1px solid var(--border-color); 
+            color: var(--text-muted); padding: 12px 24px; border-radius: 8px; 
+            cursor: pointer; font-weight: 700; font-size: 0.95rem; transition: all 0.2s ease;
+            display: flex; align-items: center; gap: 8px; font-family: inherit;
+        }
+        .tab-btn:hover { color: var(--text-bright); background: #282d3d; }
+        .tab-btn.active { 
+            background: #1e1b4b; 
+            color: #818cf8; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.25); 
+        }
+
+        .panel { 
+            background: var(--panel-bg); 
+            border-radius: 12px; 
+            padding: 24px; 
+            border: 1px solid var(--border-color); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3); 
+        }
+
+        .section-title { 
+            font-size: 1.2rem; 
+            font-weight: 700; 
+            margin-bottom: 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            color: var(--text-bright); 
+        }
+
+        .ide-window { 
+            background: var(--editor-bg); 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            overflow: hidden; 
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4); 
+        }
+        
+        .ide-header { 
+            background: #0c0d14; 
+            padding: 12px 18px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        
+        .ide-dots { display: flex; gap: 8px; }
+        .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .dot-red { background: #ff5f56; } .dot-yellow { background: #ffbd2e; } .dot-green { background: #27c93f; }
+        .ide-filename { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; font-family: 'Fira Code', monospace; }
+        
+        .ide-body { 
+            padding: 20px; 
+            font-family: 'Fira Code', 'Consolas', monospace; 
+            font-size: 0.9rem; 
+            position: relative; 
+            overflow-x: auto; 
+            white-space: pre; 
+            line-height: 1.7; 
+            max-height: 680px; 
+            overflow-y: auto; 
+        }
+
+        .code-input-wrapper { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; margin: 0 4px; }
+        
+        .inline-input {
+            background: #090a0f; 
+            border: 1.5px solid var(--primary); 
+            color: #4ade80;
+            font-family: 'Fira Code', monospace; 
+            font-size: 0.88rem; 
+            padding: 4px 10px; 
+            border-radius: 6px;
+            outline: none; 
+            min-width: 260px; 
+            transition: all 0.2s ease; 
+            font-weight: 500;
+        }
+        
+        .inline-input:focus { border-color: #818cf8; box-shadow: 0 0 10px rgba(99, 102, 241, 0.35); }
+        .inline-input.correct { border-color: var(--success); background: #14532d33; color: #4ade80; font-weight: 600; }
+        .inline-input.wrong { border-color: var(--error); background: #7f1d1d33; animation: shake 0.3s ease; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+
+        .btn-check-input { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 4px 10px; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-weight: 600; 
+            font-size: 0.8rem; 
+            font-family: 'Inter', sans-serif; 
+        }
+        .btn-check-input:hover { background: var(--primary-hover); }
+
+        .ide-toolbar { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; gap: 12px; }
+        .doc-link { color: #60a5fa; text-decoration: none; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+        .doc-link:hover { text-decoration: underline; }
+        
+        .copy-btn { 
+            background: #22c55e; color: #052e16; border: none; padding: 10px 18px; 
+            border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.88rem; transition: 0.2s;
+            font-family: 'Inter', sans-serif; display: flex; align-items: center; gap: 6px;
+        }
+        .copy-btn:hover { background: #4ade80; }
+
+        .checklist { display: flex; flex-direction: column; gap: 12px; }
+        .check-card { 
+            background: var(--card-bg); 
+            padding: 16px 20px; 
+            border-radius: 8px; 
+            border: 1px solid var(--border-color); 
+            display: flex; gap: 16px; 
+            align-items: flex-start; 
+            transition: 0.2s; 
+            cursor: pointer; 
+        }
+        .check-card:hover { background: #2a2f40; border-color: rgba(255,255,255,0.15); }
+        .check-card input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer; margin-top: 2px; }
+        .check-content { display: flex; flex-direction: column; gap: 4px; }
+        .check-title { font-size: 0.98rem; font-weight: 700; color: var(--text-bright); }
+        .check-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; }
+        .check-card.completed { opacity: 0.4; text-decoration: line-through; }
+
+        .delivery-card { 
+            background: var(--editor-bg); 
+            border-radius: 10px; 
+            border: 1px solid var(--border-color); 
+            padding: 24px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+        }
+        .delivery-group { display: flex; flex-direction: column; gap: 10px; }
+
+        .drive-btn {
+            background: #10b981; color: #042f2e; font-weight: 700; padding: 12px 20px;
+            border-radius: 8px; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.9rem; transition: 0.2s; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            align-self: flex-start;
+        }
+        .drive-btn:hover { background: #34d399; transform: translateY(-1px); }
+
+        /* Clases de Sintaxis de Código */
+        .kw { color: var(--syn-kw); font-weight: 600; }
+        .fn { color: var(--syn-fn); }
+        .type { color: var(--syn-type); }
+        .str { color: var(--syn-str); }
+        .cm { color: var(--syn-cm); font-style: italic; }
+        .num { color: var(--syn-num); }
+        .var { color: var(--syn-var); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header Principal -->
+    <div class="main-header">
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-bright);" id="app-title">Cargando Título...</h1>
+        <span class="week-badge" id="app-subtitle">Cargando Módulo...</span>
+    </div>
+
+    <!-- Sección del Objetivo del Ejercicio -->
+    <div class="objective-card">
+        <h2 class="objective-title" id="obj-title">🎯 Objetivo del Ejercicio</h2>
+        <p class="objective-text" id="obj-desc"></p>
+        <p class="objective-subtext" id="obj-subtext"></p>
+    </div>
+
+    <!-- Control de Pestañas (Tabs) -->
+    <div class="engine-tabs" id="engine-tabs"></div>
+
+    <!-- Sección 1: IDE Interactivo -->
+    <div class="panel">
+        <div class="section-title">
+            <span>1. Código Plantilla del Personaje (Completa los desafíos)</span>
+            <button class="copy-btn" id="copy-code-btn" onclick="copyFullCode()">📋 Copiar Script Resuelto</button>
+        </div>
+
+        <div class="ide-window">
+            <div class="ide-header">
+                <div class="ide-dots"><div class="dot dot-red"></div><div class="dot dot-yellow"></div><div class="dot dot-green"></div></div>
+                <div class="ide-filename" id="ide-filename">script.ext</div>
+                <div></div>
+            </div>
+            <div class="ide-body" id="code-display"></div>
+        </div>
+
+        <div class="ide-toolbar">
+            <a id="doc-link-btn" href="#" target="_blank" class="doc-link">📖 Consultar Documentación Oficial ↗</a>
+            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/0 Desafíos</span>
+        </div>
+    </div>
+
+    <!-- Sección 2: Pasos en el Editor -->
+    <div class="panel">
+        <div class="section-title">2. Pasos de Configuración en el Editor</div>
+        <div class="checklist" id="editor-checklist"></div>
+    </div>
+
+    <!-- Sección 3: Resultados Esperados -->
+    <div class="panel">
+        <div class="section-title">3. Checklist de Funcionamiento Esperado 🎯</div>
+        <div class="checklist" id="expected-checklist"></div>
+    </div>
+
+    <!-- Sección 4: Entrega -->
+    <div class="panel">
+        <div class="section-title">4. Entrega del Proyecto</div>
+        <div class="delivery-card">
+            <div class="delivery-group">
+                <p id="delivery-instructions" style="font-size: 0.95rem; color: var(--text-bright);"></p>
+                <div style="margin-top: 8px;">
+                    <a href="#" id="delivery-btn" target="_blank" class="drive-btn">
+                        📂 Abrir Carpeta de Entrega ↗
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /* 
+    ===================================================================
+    CONFIGURACIÓN DEL EJERCICIO (Edita esta sección para personalizar todo)
+    ===================================================================
+    Usa [[0]], [[1]], [[2]], etc. dentro de `codeTemplate` donde quieras
+    que aparezcan las cajas de entrada interactiva para los desafíos.
+    */
+    const EXERCISE_CONFIG = {
+        title: "IDE Multiplayer Studio 3D",
+        subtitle: "📅 Ejercicio de la Semana 7 - Sincronización y Mecánicas RPC",
+        objective: {
+            title: "🎯 Objetivo del Ejercicio",
+            description: "Lograr que el personaje pueda moverse y realizar 2 mecánicas de interacción en red correctamente sincronizadas. Para dos instancias de jugador.",
+            subtext: "A continuación, se presenta una guía base en 3D como ejemplo a seguir. Tienen total libertad para realizar las modificaciones que deseen, siempre y cuando cumplan con el objetivo multijugador del ejercicio."
+        },
+        options: [
+            {
+                id: "godot",
+                label: "⚙️ Godot 4 (GDScript 3D)",
+                filename: "player.gd",
+                docUrl: "https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html",
+                challenges: [
+                    { answer: "MultiplayerSynchronizer.new()" },
+                    { answer: "is_multiplayer_authority()" },
+                    { answer: "rpc()" },
+                    { answer: "rpc()" },
+                    { answer: '"any_peer", "call_local", "reliable"' },
+                    { answer: '"any_peer", "call_local", "reliable"' }
+                ],
+                codeTemplate: `<span class="cm"># Heredar de CharacterBody3D para proyectos 3D</span>
+<span class="kw">extends</span> <span class="type">CharacterBody3D</span>
+
+<span class="var">@export</span> <span class="kw">var</span> speed: <span class="type">float</span> = <span class="num">5.0</span>
+<span class="var">@export</span> <span class="kw">var</span> bullet_scene: <span class="type">PackedScene</span> = <span class="fn">preload</span>(<span class="str">"res://bullet.tscn"</span>)
+
+<span class="kw">var</span> esta_defendiendose: <span class="type">bool</span> = <span class="kw">false</span>
+<span class="kw">var</span> defensa_disponible: <span class="type">bool</span> = <span class="kw">true</span>
+
+<span class="kw">func</span> <span class="fn">_ready</span>() -&gt; <span class="type">void</span>:
+\t<span class="cm"># DESAFÍO 1: Instanciar el nodo MultiplayerSynchronizer</span>
+\t<span class="kw">var</span> sync_node := [[0]]
+\tsync_node.<span class="fn">set_multiplayer_authority</span>(name.<span class="fn">to_int</span>())
+\tsync_node.replication_config = <span class="type">SceneReplicationConfig</span>.<span class="kw">new</span>()
+\tsync_node.replication_config.<span class="fn">add_property</span>(<span class="str">":position"</span>)
+\t<span class="fn">add_child</span>(sync_node)
+
+<span class="kw">func</span> <span class="fn">_physics_process</span>(_delta: <span class="type">float</span>) -&gt; <span class="type">void</span>:
+\t<span class="cm"># DESAFÍO 2: El Filtro de Autoridad de Red</span>
+\t<span class="kw">if not</span> [[1]]:
+\t\t<span class="kw">return</span>
+
+\t<span class="kw">if not</span> esta_defendiendose:
+\t\t<span class="fn">_procesar_movimiento_local</span>()
+
+\t<span class="kw">if</span> <span class="type">Input</span>.<span class="fn">is_action_just_pressed</span>(<span class="str">"ui_accept"</span>) <span class="kw">and not</span> esta_defendiendose:
+\t\t<span class="cm"># DESAFÍO 3: Llamada Remota del Disparo vía RPC</span>
+\t\tdisparar_remoto.[[2]]
+
+\t<span class="kw">if</span> <span class="type">Input</span>.<span class="fn">is_action_just_pressed</span>(<span class="str">"ui_focus_next"</span>) <span class="kw">and</span> defensa_disponible:
+\t\t<span class="fn">_activar_cooldown_defensa</span>()
+\t\t<span class="cm"># DESAFÍO 4: Llamada Remota de la Defensa vía RPC</span>
+\t\tdefenderse_remoto.[[3]]
+
+<span class="kw">func</span> <span class="fn">_procesar_movimiento_local</span>() -&gt; <span class="type">void</span>:
+\t<span class="kw">var</span> input_dir := <span class="type">Input</span>.<span class="fn">get_vector</span>(<span class="str">"ui_left"</span>, <span class="str">"ui_right"</span>, <span class="str">"ui_up"</span>, <span class="str">"ui_down"</span>)
+\t<span class="kw">var</span> dir := <span class="type">Vector3</span>(input_dir.x, <span class="num">0</span>, input_dir.y).<span class="fn">normalized</span>()
+\tvelocity = dir * speed
+\t<span class="fn">move_and_slide</span>()
+
+<span class="kw">func</span> <span class="fn">_activar_cooldown_defensa</span>() -&gt; <span class="type">void</span>:
+\tdefensa_disponible = <span class="kw">false</span>
+\t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">5.0</span>).timeout
+\tdefensa_disponible = <span class="kw">true</span>
+
+<span class="cm"># DESAFÍO 5: Anotación @rpc para el Disparo</span>
+<span class="var">@rpc</span>([[4]])
+<span class="kw">func</span> <span class="fn">disparar_remoto</span>() -&gt; <span class="type">void</span>:
+\t<span class="kw">if</span> bullet_scene:
+\t\t<span class="kw">var</span> bala = bullet_scene.<span class="fn">instantiate</span>()
+\t\tbala.global_position = global_position
+\t\t<span class="fn">get_tree</span>().root.<span class="fn">add_child</span>(bala)
+
+<span class="cm"># DESAFÍO 6: Anotación @rpc para la Defensa</span>
+<span class="var">@rpc</span>([[5]])
+<span class="kw">func</span> <span class="fn">defenderse_remoto</span>() -&gt; <span class="type">void</span>:
+\testa_defendiendose = <span class="kw">true</span>
+\t<span class="fn">_aplicar_color_visual</span>(<span class="type">Color</span>(<span class="num">0.0</span>, <span class="num">0.7</span>, <span class="num">1.0</span>, <span class="num">1.0</span>))
+\t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">1.5</span>).timeout
+\testa_defendiendose = <span class="kw">false</span>
+\t<span class="fn">_aplicar_color_visual</span>(<span class="type">Color</span>(<span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>))`,
+                fullCode: `extends CharacterBody3D
+
+@export var speed: float = 5.0
+@export var bullet_scene: PackedScene = preload("res://bullet.tscn")
+
+var esta_defendiendose: bool = false
+var defensa_disponible: bool = true
+
+func _ready() -> void:
+	var sync_node := MultiplayerSynchronizer.new()
+	sync_node.set_multiplayer_authority(name.to_int())
+	sync_node.replication_config = SceneReplicationConfig.new()
+	sync_node.replication_config.add_property(":position")
+	add_child(sync_node)
+
+func _physics_process(_delta: float) -> void:
+	if not is_multiplayer_authority():
+		return
+
+	if not esta_defendiendose:
+		_procesar_movimiento_local()
+
+	if Input.is_action_just_pressed("ui_accept") and not esta_defendiendose:
+		disparar_remoto.rpc()
+
+	if Input.is_action_just_pressed("ui_focus_next") and defensa_disponible:
+		_activar_cooldown_defensa()
+		defenderse_remoto.rpc()
+
+func _procesar_movimiento_local() -> void:
+	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	var dir := Vector3(input_dir.x, 0, input_dir.y).normalized()
+	velocity = dir * speed
+	move_and_slide()
+
+func _activar_cooldown_defensa() -> void:
+	defensa_disponible = false
+	await get_tree().create_timer(5.0).timeout
+	defensa_disponible = true
+
+@rpc("any_peer", "call_local", "reliable")
+func disparar_remoto() -> void:
+	if bullet_scene:
+		var bala = bullet_scene.instantiate()
+		bala.global_position = global_position
+		get_tree().root.add_child(bala)
+
+@rpc("any_peer", "call_local", "reliable")
+func defenderse_remoto() -> void:
+	esta_defendiendose = true
+	_aplicar_color_visual(Color(0.0, 0.7, 1.0, 1.0))
+	await get_tree().create_timer(1.5).timeout
+	esta_defendiendose = false
+	_aplicar_color_visual(Color(1.0, 1.0, 1.0, 1.0))`,
+                checklist: [
+                    { title: "1. Crear Escena 3D del Jugador", desc: "Crea un nodo raíz CharacterBody3D con MeshInstance3D y CollisionShape3D." },
+                    { title: "2. Conectar Script y Escena", desc: "Adjunta el script 'player.gd' y asigna la escena 'bullet.tscn' al export 'bullet_scene'." },
+                    { title: "3. Asignar Material Visual 3D", desc: "Asegúrate de asignar un StandardMaterial3D para permitir la variación de color." },
+                    { title: "4. Probar Multi-Instancia Local", desc: "Activa 'Run Multiple Instances' (2 instancias) para probar el control independiente." },
+                    { title: "5. Validar Eventos RPC Remotos", desc: "Confirma que las acciones se reflejen simultáneamente en ambas ventanas." }
+                ]
+            },
+            {
+                id: "unity",
+                label: "🎮 Unity (Netcode C# 3D)",
+                filename: "PlayerController3D.cs",
+                docUrl: "https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/rpcs/index.html",
+                challenges: [
+                    { answer: "IsOwner" },
+                    { answer: "DispararRpc()" },
+                    { answer: "DefenderseRpc()" },
+                    { answer: "[Rpc(SendTo.Everyone)]" },
+                    { answer: "Spawn()" },
+                    { answer: "[Rpc(SendTo.Everyone)]" }
+                ],
+                codeTemplate: `<span class="kw">using</span> UnityEngine;
+<span class="kw">using</span> Unity.Netcode;
+
+<span class="kw">public class</span> <span class="type">PlayerController3D</span> : <span class="type">NetworkBehaviour</span>
+{
+    [<span class="var">SerializeField</span>] <span class="kw">private float</span> speed = <span class="num">5.0f</span>;
+    [<span class="var">SerializeField</span>] <span class="kw">private</span> <span class="type">GameObject</span> bulletPrefab;
+
+    <span class="kw">private bool</span> estaDefendiendose = <span class="kw">false</span>;
+    <span class="kw">private bool</span> defensaDisponible = <span class="kw">true</span>;
+
+    <span class="kw">private void</span> <span class="fn">Update</span>()
+    {
+        <span class="cm">// DESAFÍO 1: Validar si este cliente es el propietario local</span>
+        <span class="kw">if</span> (![[0]]) <span class="kw">return</span>;
+
+        <span class="kw">if</span> (!estaDefendiendose)
+        {
+            <span class="fn">ProcesarMovimientoLocal</span>();
+        }
+
+        <span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">GetButtonDown</span>(<span class="str">"Submit"</span>) &amp;&amp; !estaDefendiendose)
+        {
+            <span class="cm">// DESAFÍO 2: Invocar la llamada remota de disparo</span>
+            [[1]];
+        }
+
+        <span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">GetButtonDown</span>(<span class="str">"Jump"</span>) &amp;&amp; defensaDisponible)
+        {
+            <span class="fn">ActivarCooldownDefensa</span>();
+            <span class="cm">// DESAFÍO 3: Invocar la llamada remota de defensa</span>
+            [[2]];
+        }
+    }
+
+    <span class="kw">private void</span> <span class="fn">ProcesarMovimientoLocal</span>()
+    {
+        <span class="kw">float</span> moveX = <span class="type">Input</span>.<span class="fn">GetAxisRaw</span>(<span class="str">"Horizontal"</span>);
+        <span class="kw">float</span> moveZ = <span class="type">Input</span>.<span class="fn">GetAxisRaw</span>(<span class="str">"Vertical"</span>);
+        <span class="type">Vector3</span> dir = <span class="kw">new</span> <span class="type">Vector3</span>(moveX, <span class="num">0</span>, moveZ).normalized;
+        transform.position += dir * speed * <span class="type">Time</span>.deltaTime;
+    }
+
+    <span class="kw">private async void</span> <span class="fn">ActivarCooldownDefensa</span>()
+    {
+        defensaDisponible = <span class="kw">false</span>;
+        <span class="kw">await</span> System.Threading.Tasks.<span class="type">Task</span>.<span class="fn">Delay</span>(<span class="num">5000</span>);
+        defensaDisponible = <span class="kw">true</span>;
+    }
+
+    <span class="cm">// DESAFÍO 4: Atributo RPC para replicar el disparo</span>
+    [[3]]
+    <span class="kw">public void</span> <span class="fn">DispararRpc</span>()
+    {
+        <span class="kw">if</span> (bulletPrefab != <span class="kw">null</span>)
+        {
+            <span class="type">GameObject</span> bala = <span class="fn">Instantiate</span>(bulletPrefab, transform.position, <span class="type">Quaternion</span>.identity);
+            <span class="cm">// DESAFÍO 5: Spawnear en la red</span>
+            bala.<span class="fn">GetComponent</span>&lt;<span class="type">NetworkObject</span>&gt;().[[4]];
+        }
+    }
+
+    <span class="cm">// DESAFÍO 6: Atributo RPC para replicar el estado del escudo</span>
+    [[5]]
+    <span class="kw">public void</span> <span class="fn">DefenderseRpc</span>()
+    {
+        <span class="fn">AplicarDefensa</span>();
+    }
+}`,
+                fullCode: `using UnityEngine;
+using Unity.Netcode;
+
+public class PlayerController3D : NetworkBehaviour
+{
+    [SerializeField] private float speed = 5.0f;
+    [SerializeField] private GameObject bulletPrefab;
+
+    private bool estaDefendiendose = false;
+    private bool defensaDisponible = true;
+
+    private void Update()
+    {
+        if (!IsOwner) return;
+
+        if (!estaDefendiendose)
+        {
+            ProcesarMovimientoLocal();
+        }
+
+        if (Input.GetButtonDown("Submit") && !estaDefendiendose)
+        {
+            DispararRpc();
+        }
+
+        if (Input.GetButtonDown("Jump") && defensaDisponible)
+        {
+            ActivarCooldownDefensa();
+            DefenderseRpc();
+        }
+    }
+
+    private void ProcesarMovimientoLocal()
+    {
+        float moveX = Input.GetAxisRaw("Horizontal");
+        float moveZ = Input.GetAxisRaw("Vertical");
+        Vector3 dir = new Vector3(moveX, 0, moveZ).normalized;
+        transform.position += dir * speed * Time.deltaTime;
+    }
+
+    private async void ActivarCooldownDefensa()
+    {
+        defensaDisponible = false;
+        await System.Threading.Tasks.Task.Delay(5000);
+        defensaDisponible = true;
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void DispararRpc()
+    {
+        if (bulletPrefab != null)
+        {
+            GameObject bala = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+            bala.GetComponent<NetworkObject>().Spawn();
+        }
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void DefenderseRpc()
+    {
+        AplicarDefensa();
+    }
+}`,
+                checklist: [
+                    { title: "1. Crear el Script 'PlayerController3D.cs'", desc: "Crea el archivo C# en Assets/Scripts y ajústalo al Prefab 3D del personaje." },
+                    { title: "2. Componente NetworkObject", desc: "Asegúrate de incluir NetworkObject en el Jugador y en el Proyectil." },
+                    { title: "3. Asignar Prefab de Proyectil", desc: "Arrastra el prefab de la bala al campo 'bulletPrefab' en el Inspector." },
+                    { title: "4. Registrar en NetworkManager", desc: "Añade los prefabs a la lista NetworkPrefabs del NetworkManager." },
+                    { title: "5. Probar Build vs Editor", desc: "Genera un ejecutable .exe e inicia Host/Client para comprobar la red." }
+                ]
+            }
+        ],
+        expectedResultsChecklist: [
+            { title: "Movimiento Autónomo 3D 🏃‍♂️", desc: "Cada instancia controla exclusivamente a su propio personaje 3D a través de las físicas nativas." },
+            { title: "Sincronización Ofensiva (Disparo) 🔫", desc: "El proyectil debe instanciarse en la misma posición de la red en todas las ventanas activas al mismo tiempo." },
+            { title: "Sincronización Defensiva (Escudo Visual) 🛡️", desc: "Al activar la defensa, el personaje cambia de color visualmente en todas las pantallas simultáneamente." }
+        ],
+        delivery: {
+            instructions: "Sube la carpeta raíz del proyecto comprimida en formato .zip o .rar (asegúrate de incluir el archivo de configuración del proyecto).",
+            buttonText: "📂 Abrir Carpeta de Entrega en Google Drive ↗",
+            url: "https://drive.google.com/drive/folders/1mGelamoAHuc0POStiuySC-a-k4OLIDBB?usp=sharing"
+        }
+    };
+
+    /* 
+    ===================================================================
+    LÓGICA DEL SISTEMA INTERACTIVO (No requiere modificación)
+    ===================================================================
+    */
+    let currentOptionIndex = 0;
+
+    function initApp() {
+        // Cargar Títulos y Textos Generales
+        document.getElementById('app-title').innerText = EXERCISE_CONFIG.title;
+        document.getElementById('app-subtitle').innerText = EXERCISE_CONFIG.subtitle;
+        document.getElementById('obj-title').innerText = EXERCISE_CONFIG.objective.title;
+        document.getElementById('obj-desc').innerText = EXERCISE_CONFIG.objective.description;
+        document.getElementById('obj-subtext').innerText = EXERCISE_CONFIG.objective.subtext;
+
+        // Cargar Pestañas de Opciones/Motores
+        const tabsContainer = document.getElementById('engine-tabs');
+        tabsContainer.innerHTML = '';
+        EXERCISE_CONFIG.options.forEach((opt, idx) => {
+            const btn = document.createElement('button');
+            btn.className = `tab-btn ${idx === 0 ? 'active' : ''}`;
+            btn.id = `tab-btn-${idx}`;
+            btn.innerHTML = `<span>${opt.label}</span>`;
+            btn.onclick = () => switchOption(idx);
+            tabsContainer.appendChild(btn);
+        });
+
+        // Cargar Checklist de Resultados Esperados
+        const expectedContainer = document.getElementById('expected-checklist');
+        expectedContainer.innerHTML = '';
+        EXERCISE_CONFIG.expectedResultsChecklist.forEach(item => {
+            expectedContainer.appendChild(createCheckCard(item.title, item.desc));
+        });
+
+        // Cargar Entrega
+        document.getElementById('delivery-instructions').innerHTML = EXERCISE_CONFIG.delivery.instructions;
+        const driveBtn = document.getElementById('delivery-btn');
+        driveBtn.innerText = EXERCISE_CONFIG.delivery.buttonText;
+        driveBtn.href = EXERCISE_CONFIG.delivery.url;
+
+        // Renderizar la primera opción activa por defecto
+        switchOption(0);
+    }
+
+    function switchOption(index) {
+        currentOptionIndex = index;
+
+        // Actualizar pestañas activas
+        EXERCISE_CONFIG.options.forEach((_, idx) => {
+            const btn = document.getElementById(`tab-btn-${idx}`);
+            if (btn) btn.className = `tab-btn ${idx === index ? 'active' : ''}`;
+        });
+
+        const opt = EXERCISE_CONFIG.options[index];
+        document.getElementById('ide-filename').innerText = opt.filename;
+        document.getElementById('doc-link-btn').href = opt.docUrl;
+
+        renderCodeTemplate(opt);
+        renderEditorChecklist(opt.checklist);
+        updateProgress();
+    }
+
+    function renderCodeTemplate(opt) {
+        let codeHtml = opt.codeTemplate;
+
+        // Reemplazar marcadores [[i]] con inputs interactivos
+        opt.challenges.forEach((_, i) => {
+            const inputHTML = `<span class="code-input-wrapper"><input type="text" id="ch_input_${i}" class="inline-input" placeholder="[ TU CÓDIGO AQUÍ ]" autocomplete="off" spellcheck="false" onkeypress="handleKeyPress(event, ${i})"><button class="btn-check-input" onclick="verifyChallenge(${i})">✓</button></span>`;
+            codeHtml = codeHtml.replace(`[[${i}]]`, inputHTML);
+        });
+
+        document.getElementById('code-display').innerHTML = codeHtml;
+    }
+
+    function handleKeyPress(e, index) {
+        if (e.key === 'Enter') verifyChallenge(index);
+    }
+
+    function verifyChallenge(index) {
+        const inputEl = document.getElementById(`ch_input_${index}`);
+        if (!inputEl) return;
+
+        const opt = EXERCISE_CONFIG.options[currentOptionIndex];
+        const challenge = opt.challenges[index];
+
+        const userVal = inputEl.value.trim().replace(/;\s*$/, '');
+        const targetVal = challenge.answer.trim().replace(/;\s*$/, '');
+
+        if (userVal === targetVal) {
+            inputEl.classList.remove('wrong');
+            inputEl.classList.add('correct');
+            inputEl.disabled = true;
+        } else {
+            inputEl.classList.remove('wrong');
+            void inputEl.offsetWidth; // Forzar reflow para reiniciar la animación
+            inputEl.classList.add('wrong');
+        }
+
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const opt = EXERCISE_CONFIG.options[currentOptionIndex];
+        let solved = 0;
+        
+        opt.challenges.forEach((_, i) => {
+            const inputEl = document.getElementById(`ch_input_${i}`);
+            if (inputEl && inputEl.classList.contains('correct')) solved++;
+        });
+
+        document.getElementById('progress-text').innerText = `Progreso: ${solved}/${opt.challenges.length} Desafíos`;
+    }
+
+    function copyFullCode() {
+        const opt = EXERCISE_CONFIG.options[currentOptionIndex];
+        let solved = 0;
+
+        opt.challenges.forEach((_, i) => {
+            const inputEl = document.getElementById(`ch_input_${i}`);
+            if (inputEl && inputEl.classList.contains('correct')) solved++;
+        });
+
+        if (solved < opt.challenges.length) {
+            alert("Resuelve primero todos los desafíos del motor activo para poder copiar el script completo.");
+            return;
+        }
+
+        navigator.clipboard.writeText(opt.fullCode);
+        alert("📋 ¡Script completo resuelto copiado al portapapeles!");
+    }
+
+    function renderEditorChecklist(items) {
+        const container = document.getElementById('editor-checklist');
+        container.innerHTML = '';
+        items.forEach(item => {
+            container.appendChild(createCheckCard(item.title, item.desc));
+        });
+    }
+
+    function createCheckCard(title, desc) {
+        const card = document.createElement('label');
+        card.className = 'check-card';
+        card.innerHTML = `
+            <input type="checkbox" onchange="toggleCheck(this)">
+            <div class="check-content">
+                <span class="check-title">${title}</span>
+                <span class="check-desc">${desc}</span>
+            </div>
+        `;
+        return card;
+    }
+
+    function toggleCheck(checkbox) {
+        if (checkbox.checked) checkbox.parentElement.classList.add('completed');
+        else checkbox.parentElement.classList.remove('completed');
+    }
+
+    // Inicializar aplicación
+    document.addEventListener('DOMContentLoaded', initApp);
+</script>
+
+</body>
+</html>
