@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IDE Studio - Ejercicio Interactivo</title>
+    <title>Taller multijugador - Ejercicio Interactivo</title>
     
     <!-- Fuentes Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -27,7 +27,7 @@
             --text-bright: #ffffff;
             --text-muted: #94a3b8;
 
-            /* Colores para resaltado de código */
+            /* Colores para resaltado de cÃ³digo */
             --syn-kw: #ff7b72;       
             --syn-fn: #79c0ff;       
             --syn-type: #ffa657;     
@@ -43,9 +43,14 @@
             background-color: var(--bg-color); 
             color: var(--text-main); 
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            padding: 28px 16px; 
+            padding: 28px 16px 90px 16px; /* Espacio extra abajo para no tapar contenido */
             line-height: 1.6; 
             -webkit-font-smoothing: antialiased;
+        }
+
+        strong {
+            color: var(--text-bright);
+            font-weight: 600;
         }
 
         .container { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
@@ -73,7 +78,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Card de Objetivo del Ejercicio */
         .objective-card {
             background: linear-gradient(135deg, #1e1b4b 0%, #181b24 100%);
             border: 1px solid #4338ca;
@@ -95,7 +99,7 @@
             gap: 8px;
         }
 
-        .objective-text { font-size: 1rem; color: var(--text-bright); line-height: 1.6; }
+        .objective-text { font-size: 1rem; color: var(--text-main); line-height: 1.6; }
 
         .objective-subtext {
             font-size: 0.92rem;
@@ -262,7 +266,77 @@
         }
         .drive-btn:hover { background: #34d399; transform: translateY(-1px); }
 
-        /* Clases de Sintaxis de Código */
+        /* UI/UX EXPERT FLOATING WATERMARK BADGE */
+        .fixed-badge {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: rgba(24, 27, 36, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 50px;
+            box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5), 
+                        0 0 20px rgba(99, 102, 241, 0.2);
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-main);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            user-select: none;
+        }
+
+        .fixed-badge:hover {
+            transform: translateY(-4px) scale(1.02);
+            border-color: rgba(129, 140, 248, 0.4);
+            box-shadow: 0 14px 35px -5px rgba(0, 0, 0, 0.6), 
+                        0 0 28px rgba(99, 102, 241, 0.4);
+        }
+
+        .gemini-text {
+            background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .author-tag {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(168, 85, 247, 0.3));
+            border: 1px solid rgba(129, 140, 248, 0.4);
+            transition: all 0.25s ease;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);
+        }
+
+        .author-tag:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.6), rgba(168, 85, 247, 0.6));
+            color: #ffffff;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.5);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        @media (max-width: 600px) {
+            .fixed-badge {
+                bottom: 12px;
+                right: 12px;
+                left: 12px;
+                justify-content: center;
+                font-size: 0.8rem;
+                padding: 8px 14px;
+            }
+        }
+
         .kw { color: var(--syn-kw); font-weight: 600; }
         .fn { color: var(--syn-fn); }
         .type { color: var(--syn-type); }
@@ -277,25 +351,25 @@
 <div class="container">
     <!-- Header Principal -->
     <div class="main-header">
-        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-bright);" id="app-title">Cargando Título...</h1>
-        <span class="week-badge" id="app-subtitle">Cargando Módulo...</span>
+        <h1 style="font-size: 1.6rem; font-weight: 800; color: var(--text-bright);" id="app-title">Cargando TÃtulo...</h1>
+        <span class="week-badge" id="app-subtitle">Cargando MÃ³dulo...</span>
     </div>
 
-    <!-- Sección del Objetivo del Ejercicio -->
+    <!-- SecciÃ³n del Objetivo del Ejercicio -->
     <div class="objective-card">
-        <h2 class="objective-title" id="obj-title">🎯 Objetivo del Ejercicio</h2>
+        <h2 class="objective-title" id="obj-title">ðŸŽ¯ Objetivo del Ejercicio</h2>
         <p class="objective-text" id="obj-desc"></p>
         <p class="objective-subtext" id="obj-subtext"></p>
     </div>
 
-    <!-- Control de Pestañas (Tabs) -->
+    <!-- Control de PestaÃ±as (Tabs) -->
     <div class="engine-tabs" id="engine-tabs"></div>
 
-    <!-- Sección 1: IDE Interactivo -->
+    <!-- SecciÃ³n 1: IDE Interactivo -->
     <div class="panel">
         <div class="section-title">
-            <span>1. Código Plantilla del Personaje (Completa los desafíos)</span>
-            <button class="copy-btn" id="copy-code-btn" onclick="copyFullCode()">📋 Copiar Script Resuelto</button>
+            <span>1. CÃ³digo Plantilla del Personaje (Completa los desafÃos)</span>
+            <button class="copy-btn" id="copy-code-btn" onclick="copyFullCode()">ðŸ“‹ Copiar Script Resuelto</button>
         </div>
 
         <div class="ide-window">
@@ -308,32 +382,32 @@
         </div>
 
         <div class="ide-toolbar">
-            <a id="doc-link-btn" href="#" target="_blank" class="doc-link">📖 Consultar Documentación Oficial ↗</a>
-            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/0 Desafíos</span>
+            <a id="doc-link-btn" href="#" target="_blank" class="doc-link">ðŸ“– Consultar DocumentaciÃ³n Oficial â†—</a>
+            <span style="font-size:0.85rem; color: var(--text-muted);" id="progress-text">Progreso: 0/0 DesafÃos</span>
         </div>
     </div>
 
-    <!-- Sección 2: Pasos en el Editor -->
+    <!-- SecciÃ³n 2: Pasos en el Editor -->
     <div class="panel">
-        <div class="section-title">2. Pasos de Configuración en el Editor</div>
+        <div class="section-title">2. Pasos de ConfiguraciÃ³n en el Editor</div>
         <div class="checklist" id="editor-checklist"></div>
     </div>
 
-    <!-- Sección 3: Resultados Esperados -->
+    <!-- SecciÃ³n 3: Resultados Esperados -->
     <div class="panel">
-        <div class="section-title">3. Checklist de Funcionamiento Esperado 🎯</div>
+        <div class="section-title">3. Checklist de Funcionamiento Esperado ðŸŽ¯</div>
         <div class="checklist" id="expected-checklist"></div>
     </div>
 
-    <!-- Sección 4: Entrega -->
+    <!-- SecciÃ³n 4: Entrega -->
     <div class="panel">
         <div class="section-title">4. Entrega del Proyecto</div>
         <div class="delivery-card">
             <div class="delivery-group">
-                <p id="delivery-instructions" style="font-size: 0.95rem; color: var(--text-bright);"></p>
+                <p id="delivery-instructions" style="font-size: 0.95rem; color: var(--text-main);"></p>
                 <div style="margin-top: 8px;">
                     <a href="#" id="delivery-btn" target="_blank" class="drive-btn">
-                        📂 Abrir Carpeta de Entrega ↗
+                        ðŸ“‚ Abrir Carpeta de Entrega â†—
                     </a>
                 </div>
             </div>
@@ -341,27 +415,26 @@
     </div>
 </div>
 
+<!-- Badge Flotante Fijado UI/UX -->
+<div class="fixed-badge">
+    <span>Desarrollado con <span class="gemini-text">Google Gemini âœ¨</span> por</span>
+    <a href="https://github.com/enegdev" target="_blank" class="author-tag">enegdev</a>
+</div>
+
 <script>
-    /* 
-    ===================================================================
-    CONFIGURACIÓN DEL EJERCICIO (Edita esta sección para personalizar todo)
-    ===================================================================
-    Usa [[0]], [[1]], [[2]], etc. dentro de `codeTemplate` donde quieras
-    que aparezcan las cajas de entrada interactiva para los desafíos.
-    */
     const EXERCISE_CONFIG = {
-        title: "IDE Multiplayer Studio 3D",
-        subtitle: "📅 Ejercicio de la Semana 7 - Sincronización y Mecánicas RPC",
+        title: "Taller multijugador",
+        subtitle: "ðŸ“… Ejercicio de la Semana 7 - SincronizaciÃ³n y MecÃ¡nicas RPC",
         objective: {
-            title: "🎯 Objetivo del Ejercicio",
-            description: "Lograr que el personaje pueda moverse y realizar 2 mecánicas de interacción en red correctamente sincronizadas. Para dos instancias de jugador.",
-            subtext: "A continuación, se presenta una guía base en 3D como ejemplo a seguir. Tienen total libertad para realizar las modificaciones que deseen, siempre y cuando cumplan con el objetivo multijugador del ejercicio."
+            title: "ðŸŽ¯ Objetivo del Ejercicio",
+            description: "Lograr que el personaje pueda moverse y realizar 2 mecÃ¡nicas de interacciÃ³n en red correctamente sincronizadas. DiseÃ±ado para dos instancias de jugador.",
+            subtext: "A continuaciÃ³n, se presenta una guÃa base en 3D como ejemplo a seguir. Tienen total libertad para realizar las modificaciones que deseen, siempre y cuando cumplan con el objetivo multijugador del ejercicio."
         },
         options: [
             {
                 id: "godot",
-                label: "⚙️ Godot 4 (GDScript 3D)",
-                filename: "player.gd",
+                label: "âš™ï¸ Godot 4 (GDScript 3D)",
+                filename: "PlayerController3D.gd",
                 docUrl: "https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html",
                 challenges: [
                     { answer: "MultiplayerSynchronizer.new()" },
@@ -381,7 +454,7 @@
 <span class="kw">var</span> defensa_disponible: <span class="type">bool</span> = <span class="kw">true</span>
 
 <span class="kw">func</span> <span class="fn">_ready</span>() -&gt; <span class="type">void</span>:
-\t<span class="cm"># DESAFÍO 1: Instanciar el nodo MultiplayerSynchronizer</span>
+\t<span class="cm"># DESAFÃO 1: Instanciar el nodo MultiplayerSynchronizer</span>
 \t<span class="kw">var</span> sync_node := [[0]]
 \tsync_node.<span class="fn">set_multiplayer_authority</span>(name.<span class="fn">to_int</span>())
 \tsync_node.replication_config = <span class="type">SceneReplicationConfig</span>.<span class="kw">new</span>()
@@ -389,7 +462,7 @@
 \t<span class="fn">add_child</span>(sync_node)
 
 <span class="kw">func</span> <span class="fn">_physics_process</span>(_delta: <span class="type">float</span>) -&gt; <span class="type">void</span>:
-\t<span class="cm"># DESAFÍO 2: El Filtro de Autoridad de Red</span>
+\t<span class="cm"># DESAFÃO 2: El Filtro de Autoridad de Red</span>
 \t<span class="kw">if not</span> [[1]]:
 \t\t<span class="kw">return</span>
 
@@ -397,12 +470,12 @@
 \t\t<span class="fn">_procesar_movimiento_local</span>()
 
 \t<span class="kw">if</span> <span class="type">Input</span>.<span class="fn">is_action_just_pressed</span>(<span class="str">"ui_accept"</span>) <span class="kw">and not</span> esta_defendiendose:
-\t\t<span class="cm"># DESAFÍO 3: Llamada Remota del Disparo vía RPC</span>
+\t\t<span class="cm"># DESAFÃO 3: Llamada Remota del Disparo vÃa RPC</span>
 \t\tdisparar_remoto.[[2]]
 
 \t<span class="kw">if</span> <span class="type">Input</span>.<span class="fn">is_action_just_pressed</span>(<span class="str">"ui_focus_next"</span>) <span class="kw">and</span> defensa_disponible:
 \t\t<span class="fn">_activar_cooldown_defensa</span>()
-\t\t<span class="cm"># DESAFÍO 4: Llamada Remota de la Defensa vía RPC</span>
+\t\t<span class="cm"># DESAFÃO 4: Llamada Remota de la Defensa vÃa RPC</span>
 \t\tdefenderse_remoto.[[3]]
 
 <span class="kw">func</span> <span class="fn">_procesar_movimiento_local</span>() -&gt; <span class="type">void</span>:
@@ -416,15 +489,15 @@
 \t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">5.0</span>).timeout
 \tdefensa_disponible = <span class="kw">true</span>
 
-<span class="cm"># DESAFÍO 5: Anotación @rpc para el Disparo</span>
+<span class="cm"># DESAFÃO 5: AnotaciÃ³n @rpc para el Disparo</span>
 <span class="var">@rpc</span>([[4]])
 <span class="kw">func</span> <span class="fn">disparar_remoto</span>() -&gt; <span class="type">void</span>:
 \t<span class="kw">if</span> bullet_scene:
 \t\t<span class="kw">var</span> bala = bullet_scene.<span class="fn">instantiate</span>()
 \t\tbala.global_position = global_position
-\t\t<span class="fn">get_tree</span>().root.<span class="fn">add_child</span>(bala)
+\t<span class="fn">get_tree</span>().root.<span class="fn">add_child</span>(bala)
 
-<span class="cm"># DESAFÍO 6: Anotación @rpc para la Defensa</span>
+<span class="cm"># DESAFÃO 6: AnotaciÃ³n @rpc para la Defensa</span>
 <span class="var">@rpc</span>([[5]])
 <span class="kw">func</span> <span class="fn">defenderse_remoto</span>() -&gt; <span class="type">void</span>:
 \testa_defendiendose = <span class="kw">true</span>
@@ -432,71 +505,19 @@
 \t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">1.5</span>).timeout
 \testa_defendiendose = <span class="kw">false</span>
 \t<span class="fn">_aplicar_color_visual</span>(<span class="type">Color</span>(<span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>))`,
-                fullCode: `extends CharacterBody3D
-
-@export var speed: float = 5.0
-@export var bullet_scene: PackedScene = preload("res://bullet.tscn")
-
-var esta_defendiendose: bool = false
-var defensa_disponible: bool = true
-
-func _ready() -> void:
-	var sync_node := MultiplayerSynchronizer.new()
-	sync_node.set_multiplayer_authority(name.to_int())
-	sync_node.replication_config = SceneReplicationConfig.new()
-	sync_node.replication_config.add_property(":position")
-	add_child(sync_node)
-
-func _physics_process(_delta: float) -> void:
-	if not is_multiplayer_authority():
-		return
-
-	if not esta_defendiendose:
-		_procesar_movimiento_local()
-
-	if Input.is_action_just_pressed("ui_accept") and not esta_defendiendose:
-		disparar_remoto.rpc()
-
-	if Input.is_action_just_pressed("ui_focus_next") and defensa_disponible:
-		_activar_cooldown_defensa()
-		defenderse_remoto.rpc()
-
-func _procesar_movimiento_local() -> void:
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var dir := Vector3(input_dir.x, 0, input_dir.y).normalized()
-	velocity = dir * speed
-	move_and_slide()
-
-func _activar_cooldown_defensa() -> void:
-	defensa_disponible = false
-	await get_tree().create_timer(5.0).timeout
-	defensa_disponible = true
-
-@rpc("any_peer", "call_local", "reliable")
-func disparar_remoto() -> void:
-	if bullet_scene:
-		var bala = bullet_scene.instantiate()
-		bala.global_position = global_position
-		get_tree().root.add_child(bala)
-
-@rpc("any_peer", "call_local", "reliable")
-func defenderse_remoto() -> void:
-	esta_defendiendose = true
-	_aplicar_color_visual(Color(0.0, 0.7, 1.0, 1.0))
-	await get_tree().create_timer(1.5).timeout
-	esta_defendiendose = false
-	_aplicar_color_visual(Color(1.0, 1.0, 1.0, 1.0))`,
+                fullCode: `extends CharacterBody3D\n\n@export var speed: float = 5.0\n@export var bullet_scene: PackedScene = preload("res://bullet.tscn")\n\nvar esta_defendiendose: bool = false\nvar defensa_disponible: bool = true\n\nfunc _ready() -> void:\n\tvar sync_node := MultiplayerSynchronizer.new()\n\tsync_node.set_multiplayer_authority(name.to_int())\n\tsync_node.replication_config = SceneReplicationConfig.new()\n\tsync_node.replication_config.add_property(":position")\n\tadd_child(sync_node)\n\nfunc _physics_process(_delta: float) -> void:\n\tif not is_multiplayer_authority():\n\t\treturn\n\n\tif not esta_defendiendose:\n\t\t_procesar_movimiento_local()\n\n\tif Input.is_action_just_pressed("ui_accept") and not esta_defendiendose:\n\t\tdisparar_remoto.rpc()\n\n\tif Input.is_action_just_pressed("ui_focus_next") and defensa_disponible:\n\t\t_activar_cooldown_defensa()\n\t\tdefenderse_remoto.rpc()\n\nfunc _procesar_movimiento_local() -> void:\n\tvar input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")\n\tvar dir := Vector3(input_dir.x, 0, input_dir.y).normalized()\n\tvelocity = dir * speed\n\tmove_and_slide()\n\nfunc _activar_cooldown_defensa() -> void:\n\tdefensa_disponible = false\n\tawait get_tree().create_timer(5.0).timeout\n\tdefensa_disponible = true\n\n@rpc("any_peer", "call_local", "reliable")\nfunc disparar_remoto() -> void:\n\tif bullet_scene:\n\t\tvar bala = bullet_scene.instantiate()\n\t\tbala.global_position = global_position\n\t\tget_tree().root.add_child(bala)\n\n@rpc("any_peer", "call_local", "reliable")\nfunc defenderse_remoto() -> void:\n\testa_defendiendose = true\n\t_aplicar_color_visual(Color(0.0, 0.7, 1.0, 1.0))\n\tawait get_tree().create_timer(1.5).timeout\n\testa_defendiendose = false\n\t_aplicar_color_visual(Color(1.0, 1.0, 1.0, 1.0))`
+                ,
                 checklist: [
-                    { title: "1. Crear Escena 3D del Jugador", desc: "Crea un nodo raíz CharacterBody3D con MeshInstance3D y CollisionShape3D." },
-                    { title: "2. Conectar Script y Escena", desc: "Adjunta el script 'player.gd' y asigna la escena 'bullet.tscn' al export 'bullet_scene'." },
-                    { title: "3. Asignar Material Visual 3D", desc: "Asegúrate de asignar un StandardMaterial3D para permitir la variación de color." },
+                    { title: "1. Crear Escena 3D del Jugador", desc: "Crea un nodo raÃz <strong>CharacterBody3D</strong> con MeshInstance3D y CollisionShape3D." },
+                    { title: "2. Conectar Script y Escena", desc: "Adjunta el script <strong>'PlayerController3D.gd'</strong> y asigna la escena <strong>'bullet.tscn'</strong> al export 'bullet_scene'." },
+                    { title: "3. Asignar Material Visual 3D", desc: "AsegÃºrate de asignar un <strong>StandardMaterial3D</strong> para permitir la variaciÃ³n de color." },
                     { title: "4. Probar Multi-Instancia Local", desc: "Activa 'Run Multiple Instances' (2 instancias) para probar el control independiente." },
-                    { title: "5. Validar Eventos RPC Remotos", desc: "Confirma que las acciones se reflejen simultáneamente en ambas ventanas." }
+                    { title: "5. Validar Eventos RPC Remotos", desc: "Confirma que las acciones se reflejen simultÃ¡neamente en ambas ventanas de prueba." }
                 ]
             },
             {
                 id: "unity",
-                label: "🎮 Unity (Netcode C# 3D)",
+                label: "ðŸŽ® Unity (Netcode C# 3D)",
                 filename: "PlayerController3D.cs",
                 docUrl: "https://docs-multiplayer.unity3d.com/netcode/current/advanced-topics/rpcs/index.html",
                 challenges: [
@@ -520,7 +541,7 @@ func defenderse_remoto() -> void:
 
     <span class="kw">private void</span> <span class="fn">Update</span>()
     {
-        <span class="cm">// DESAFÍO 1: Validar si este cliente es el propietario local</span>
+        <span class="cm">// DESAFÃO 1: Validar si este cliente es el propietario local</span>
         <span class="kw">if</span> (![[0]]) <span class="kw">return</span>;
 
         <span class="kw">if</span> (!estaDefendiendose)
@@ -530,14 +551,14 @@ func defenderse_remoto() -> void:
 
         <span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">GetButtonDown</span>(<span class="str">"Submit"</span>) &amp;&amp; !estaDefendiendose)
         {
-            <span class="cm">// DESAFÍO 2: Invocar la llamada remota de disparo</span>
+            <span class="cm">// DESAFÃO 2: Invocar la llamada remota de disparo</span>
             [[1]];
         }
 
         <span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">GetButtonDown</span>(<span class="str">"Jump"</span>) &amp;&amp; defensaDisponible)
         {
             <span class="fn">ActivarCooldownDefensa</span>();
-            <span class="cm">// DESAFÍO 3: Invocar la llamada remota de defensa</span>
+            <span class="cm">// DESAFÃO 3: Invocar la llamada remota de defensa</span>
             [[2]];
         }
     }
@@ -557,125 +578,56 @@ func defenderse_remoto() -> void:
         defensaDisponible = <span class="kw">true</span>;
     }
 
-    <span class="cm">// DESAFÍO 4: Atributo RPC para replicar el disparo</span>
+    <span class="cm">// DESAFÃO 4: Atributo RPC para replicar el disparo</span>
     [[3]]
     <span class="kw">public void</span> <span class="fn">DispararRpc</span>()
     {
         <span class="kw">if</span> (bulletPrefab != <span class="kw">null</span>)
         {
             <span class="type">GameObject</span> bala = <span class="fn">Instantiate</span>(bulletPrefab, transform.position, <span class="type">Quaternion</span>.identity);
-            <span class="cm">// DESAFÍO 5: Spawnear en la red</span>
+            <span class="cm">// DESAFÃO 5: Spawnear en la red</span>
             bala.<span class="fn">GetComponent</span>&lt;<span class="type">NetworkObject</span>&gt;().[[4]];
         }
     }
 
-    <span class="cm">// DESAFÍO 6: Atributo RPC para replicar el estado del escudo</span>
+    <span class="cm">// DESAFÃO 6: Atributo RPC para replicar el estado del escudo</span>
     [[5]]
     <span class="kw">public void</span> <span class="fn">DefenderseRpc</span>()
     {
         <span class="fn">AplicarDefensa</span>();
     }
 }`,
-                fullCode: `using UnityEngine;
-using Unity.Netcode;
-
-public class PlayerController3D : NetworkBehaviour
-{
-    [SerializeField] private float speed = 5.0f;
-    [SerializeField] private GameObject bulletPrefab;
-
-    private bool estaDefendiendose = false;
-    private bool defensaDisponible = true;
-
-    private void Update()
-    {
-        if (!IsOwner) return;
-
-        if (!estaDefendiendose)
-        {
-            ProcesarMovimientoLocal();
-        }
-
-        if (Input.GetButtonDown("Submit") && !estaDefendiendose)
-        {
-            DispararRpc();
-        }
-
-        if (Input.GetButtonDown("Jump") && defensaDisponible)
-        {
-            ActivarCooldownDefensa();
-            DefenderseRpc();
-        }
-    }
-
-    private void ProcesarMovimientoLocal()
-    {
-        float moveX = Input.GetAxisRaw("Horizontal");
-        float moveZ = Input.GetAxisRaw("Vertical");
-        Vector3 dir = new Vector3(moveX, 0, moveZ).normalized;
-        transform.position += dir * speed * Time.deltaTime;
-    }
-
-    private async void ActivarCooldownDefensa()
-    {
-        defensaDisponible = false;
-        await System.Threading.Tasks.Task.Delay(5000);
-        defensaDisponible = true;
-    }
-
-    [Rpc(SendTo.Everyone)]
-    public void DispararRpc()
-    {
-        if (bulletPrefab != null)
-        {
-            GameObject bala = Instantiate(bulletPrefab, transform.position, Quaternion.identity);
-            bala.GetComponent<NetworkObject>().Spawn();
-        }
-    }
-
-    [Rpc(SendTo.Everyone)]
-    public void DefenderseRpc()
-    {
-        AplicarDefensa();
-    }
-}`,
+                fullCode: `using UnityEngine;\nusing Unity.Netcode;\n\npublic class PlayerController3D : NetworkBehaviour\n{\n    [SerializeField] private float speed = 5.0f;\n    [SerializeField] private GameObject bulletPrefab;\n\n    private bool estaDefendiendose = false;\n    private bool defensaDisponible = true;\n\n    private void Update()\n    {\n        if (!IsOwner) return;\n\n        if (!estaDefendiendose)\n        {\n            ProcesarMovimientoLocal();\n        }\n\n        if (Input.GetButtonDown("Submit") && !estaDefendiendose)\n        {\n            DispararRpc();\n        }\n\n        if (Input.GetButtonDown("Jump") && defensaDisponible)\n        {\n            ActivarCooldownDefensa();\n            DefenderseRpc();\n        }\n    }\n\n    private void ProcesarMovimientoLocal()\n    {\n        float moveX = Input.GetAxisRaw("Horizontal");\n        float moveZ = Input.GetAxisRaw("Vertical");\n        Vector3 dir = new Vector3(moveX, 0, moveZ).normalized;\n        transform.position += dir * speed * Time.deltaTime;\n    }\n\n    private async void ActivarCooldownDefensa()\n    {\n        defensaDisponible = false;\n        await System.Threading.Tasks.Task.Delay(5000);\n        defensaDisponible = true;\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void DispararRpc()\n    {\n        if (bulletPrefab != null)\n        {\n            GameObject bala = Instantiate(bulletPrefab, transform.position, Quaternion.identity);\n            bala.GetComponent<NetworkObject>().Spawn();\n        }\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void DefenderseRpc()\n    {\n        AplicarDefensa();\n    }\n}`,
                 checklist: [
-                    { title: "1. Crear el Script 'PlayerController3D.cs'", desc: "Crea el archivo C# en Assets/Scripts y ajústalo al Prefab 3D del personaje." },
-                    { title: "2. Componente NetworkObject", desc: "Asegúrate de incluir NetworkObject en el Jugador y en el Proyectil." },
-                    { title: "3. Asignar Prefab de Proyectil", desc: "Arrastra el prefab de la bala al campo 'bulletPrefab' en el Inspector." },
-                    { title: "4. Registrar en NetworkManager", desc: "Añade los prefabs a la lista NetworkPrefabs del NetworkManager." },
-                    { title: "5. Probar Build vs Editor", desc: "Genera un ejecutable .exe e inicia Host/Client para comprobar la red." }
+                    { title: "1. Crear el Script 'PlayerController3D.cs'", desc: "Crea el archivo C# en Assets/Scripts y ajÃºstalo al Prefab 3D del personaje." },
+                    { title: "2. Componente NetworkObject", desc: "AsegÃºrate de incluir <strong>NetworkObject</strong> en el Jugador y en el Proyectil." },
+                    { title: "3. Asignar Prefab de Proyectil", desc: "Arrastra el prefab de la bala al campo <strong>'bulletPrefab'</strong> en el Inspector." },
+                    { title: "4. Registrar en NetworkManager", desc: "AÃ±ade los prefabs a la lista de <strong>NetworkPrefabs</strong> del NetworkManager." },
+                    { title: "5. Probar Build vs Editor", desc: "Genera un ejecutable e inicia Host/Client para comprobar el funcionamiento en red." }
                 ]
             }
         ],
         expectedResultsChecklist: [
-            { title: "Movimiento Autónomo 3D 🏃‍♂️", desc: "Cada instancia controla exclusivamente a su propio personaje 3D a través de las físicas nativas." },
-            { title: "Sincronización Ofensiva (Disparo) 🔫", desc: "El proyectil debe instanciarse en la misma posición de la red en todas las ventanas activas al mismo tiempo." },
-            { title: "Sincronización Defensiva (Escudo Visual) 🛡️", desc: "Al activar la defensa, el personaje cambia de color visualmente en todas las pantallas simultáneamente." }
+            { title: "Movimiento AutÃ³nomo 3D ðŸƒâ€â™‚ï¸", desc: "Cada instancia controla exclusivamente a su propio personaje 3D a travÃ©s de las fÃsicas nativas." },
+            { title: "SincronizaciÃ³n Ofensiva (Disparo) ðŸ”«", desc: "El proyectil debe instanciarse en la misma posiciÃ³n de la red en todas las ventanas activas al mismo tiempo." },
+            { title: "SincronizaciÃ³n Defensiva (Escudo Visual) ðŸ›¡ï¸", desc: "Al activar la defensa, el personaje cambia de color visualmente en todas las pantallas simultÃ¡neamente." }
         ],
         delivery: {
-            instructions: "Sube la carpeta raíz del proyecto comprimida en formato .zip o .rar (asegúrate de incluir el archivo de configuración del proyecto).",
-            buttonText: "📂 Abrir Carpeta de Entrega en Google Drive ↗",
-            url: "https://drive.google.com/drive/folders/1P2m34MooBDFOxsFatV9paNU49p55xDdJ?usp=sharing"
+            instructions: `Exporta la build en formato <strong>.exe</strong> (junto a sus archivos de datos adjuntos) e incluye la <strong>carpeta de scripts</strong> del proyecto. ComprÃmelo todo en un archivo <strong>.zip</strong> o <strong>.rar</strong> y sÃºbelo a la carpeta compartida.`,
+            buttonText: "ðŸ“‚ Abrir Carpeta de Entrega en Google Drive â†—",
+            url: "https://drive.google.com/drive/folders/1mGelamoAHuc0POStiuySC-a-k4OLIDBB?usp=sharing"
         }
     };
 
-    /* 
-    ===================================================================
-    LÓGICA DEL SISTEMA INTERACTIVO (No requiere modificación)
-    ===================================================================
-    */
     let currentOptionIndex = 0;
 
     function initApp() {
-        // Cargar Títulos y Textos Generales
         document.getElementById('app-title').innerText = EXERCISE_CONFIG.title;
         document.getElementById('app-subtitle').innerText = EXERCISE_CONFIG.subtitle;
-        document.getElementById('obj-title').innerText = EXERCISE_CONFIG.objective.title;
-        document.getElementById('obj-desc').innerText = EXERCISE_CONFIG.objective.description;
-        document.getElementById('obj-subtext').innerText = EXERCISE_CONFIG.objective.subtext;
+        document.getElementById('obj-title').innerHTML = EXERCISE_CONFIG.objective.title;
+        document.getElementById('obj-desc').innerHTML = EXERCISE_CONFIG.objective.description;
+        document.getElementById('obj-subtext').innerHTML = EXERCISE_CONFIG.objective.subtext;
 
-        // Cargar Pestañas de Opciones/Motores
         const tabsContainer = document.getElementById('engine-tabs');
         tabsContainer.innerHTML = '';
         EXERCISE_CONFIG.options.forEach((opt, idx) => {
@@ -687,27 +639,23 @@ public class PlayerController3D : NetworkBehaviour
             tabsContainer.appendChild(btn);
         });
 
-        // Cargar Checklist de Resultados Esperados
         const expectedContainer = document.getElementById('expected-checklist');
         expectedContainer.innerHTML = '';
         EXERCISE_CONFIG.expectedResultsChecklist.forEach(item => {
             expectedContainer.appendChild(createCheckCard(item.title, item.desc));
         });
 
-        // Cargar Entrega
         document.getElementById('delivery-instructions').innerHTML = EXERCISE_CONFIG.delivery.instructions;
         const driveBtn = document.getElementById('delivery-btn');
         driveBtn.innerText = EXERCISE_CONFIG.delivery.buttonText;
         driveBtn.href = EXERCISE_CONFIG.delivery.url;
 
-        // Renderizar la primera opción activa por defecto
         switchOption(0);
     }
 
     function switchOption(index) {
         currentOptionIndex = index;
 
-        // Actualizar pestañas activas
         EXERCISE_CONFIG.options.forEach((_, idx) => {
             const btn = document.getElementById(`tab-btn-${idx}`);
             if (btn) btn.className = `tab-btn ${idx === index ? 'active' : ''}`;
@@ -725,9 +673,8 @@ public class PlayerController3D : NetworkBehaviour
     function renderCodeTemplate(opt) {
         let codeHtml = opt.codeTemplate;
 
-        // Reemplazar marcadores [[i]] con inputs interactivos
         opt.challenges.forEach((_, i) => {
-            const inputHTML = `<span class="code-input-wrapper"><input type="text" id="ch_input_${i}" class="inline-input" placeholder="[ TU CÓDIGO AQUÍ ]" autocomplete="off" spellcheck="false" onkeypress="handleKeyPress(event, ${i})"><button class="btn-check-input" onclick="verifyChallenge(${i})">✓</button></span>`;
+            const inputHTML = `<span class="code-input-wrapper"><input type="text" id="ch_input_${i}" class="inline-input" placeholder="[ TU CÃ“DIGO AQUÃ ]" autocomplete="off" spellcheck="false" onkeypress="handleKeyPress(event, ${i})"><button class="btn-check-input" onclick="verifyChallenge(${i})">âœ“</button></span>`;
             codeHtml = codeHtml.replace(`[[${i}]]`, inputHTML);
         });
 
@@ -754,7 +701,7 @@ public class PlayerController3D : NetworkBehaviour
             inputEl.disabled = true;
         } else {
             inputEl.classList.remove('wrong');
-            void inputEl.offsetWidth; // Forzar reflow para reiniciar la animación
+            void inputEl.offsetWidth; 
             inputEl.classList.add('wrong');
         }
 
@@ -770,7 +717,7 @@ public class PlayerController3D : NetworkBehaviour
             if (inputEl && inputEl.classList.contains('correct')) solved++;
         });
 
-        document.getElementById('progress-text').innerText = `Progreso: ${solved}/${opt.challenges.length} Desafíos`;
+        document.getElementById('progress-text').innerText = `Progreso: ${solved}/${opt.challenges.length} DesafÃos`;
     }
 
     function copyFullCode() {
@@ -783,12 +730,12 @@ public class PlayerController3D : NetworkBehaviour
         });
 
         if (solved < opt.challenges.length) {
-            alert("Resuelve primero todos los desafíos del motor activo para poder copiar el script completo.");
+            alert("Resuelve primero todos los desafÃos del motor activo para poder copiar el script completo.");
             return;
         }
 
         navigator.clipboard.writeText(opt.fullCode);
-        alert("📋 ¡Script completo resuelto copiado al portapapeles!");
+        alert("ðŸ“‹ Â¡Script completo resuelto copiado al portapapeles!");
     }
 
     function renderEditorChecklist(items) {
@@ -817,7 +764,6 @@ public class PlayerController3D : NetworkBehaviour
         else checkbox.parentElement.classList.remove('completed');
     }
 
-    // Inicializar aplicación
     document.addEventListener('DOMContentLoaded', initApp);
 </script>
 
