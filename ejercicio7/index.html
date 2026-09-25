@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejercicio Interactivo - Taller Multijugador</title>
+    <title>Ejercicio Interactivo</title>
     
     <!-- Fuentes Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,7 +95,7 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             letter-spacing: 0.3px;
         }
 
@@ -405,7 +405,7 @@
     <div class="main-header">
         <div class="subject-badge">
             <span class="subject-dot"></span>
-            <span id="app-subject">TALLER DE DESARROLLO DE JUEGOS MULTIJUGADOR | UPSO</span>
+            <span id="app-subject">Programación de Videojuegos</span>
         </div>
         <span class="week-badge" id="app-subtitle">Cargando Módulo...</span>
     </div>
@@ -462,7 +462,7 @@
                 <p id="delivery-instructions" style="font-size: 0.95rem; color: var(--text-main);"></p>
                 <div style="margin-top: 8px;">
                     <a href="#" id="delivery-btn" target="_blank" class="drive-btn">
-                        📂 Abrir Carpeta de Entrega en Google Drive ↗
+                        📂 Abrir Carpeta de Entrega ↗
                     </a>
                 </div>
             </div>
@@ -478,12 +478,12 @@
 
 <script>
     const EXERCISE_CONFIG = {
-        subject: "TALLER DE DESARROLLO DE JUEGOS MULTIJUGADOR | UPSO",
+        subject: "Programación de Videojuegos",
         subtitle: "📅 Semana 7 - Sincronización y Mecánicas RPC",
         objective: {
             title: "🎯 Objetivo del Ejercicio",
             description: "Lograr que el personaje pueda moverse y realizar 2 mecánicas de interacción en red correctamente sincronizadas. Diseñado para dos instancias de jugador.",
-            subtext: "A continuación, se presenta una guía base en 3D como ejemplo a seguir. Tienen total libertad para realizar las modificaciones que deseen, siempre y cuando cumplan con el objetivo multijugador del ejercicio."
+            subtext: "A continuación, se presenta una guía base en 3D como ejemplo a seguir. Se ha optimizado la nomenclatura desacoplando detalles de implementación (removiendo el prefijo CoRutina de los métodos) para enfocarse en la clara intención del método 'AplicarDefensa'."
         },
         options: [
             {
@@ -531,7 +531,7 @@
 \t<span class="kw">if</span> <span class="type">Input</span>.<span class="fn">is_action_just_pressed</span>(<span class="str">"ui_focus_next"</span>) <span class="kw">and</span> defensa_disponible:
 \t\t<span class="fn">_activar_cooldown_defensa</span>()
 \t\t<span class="cm"># DESAFÍO 4: Llamada Remota de la Defensa vía RPC</span>
-\t\tdefenderse_remoto.[[3]]
+\t\taplicar_defensa_remoto.[[3]]
 
 <span class="kw">func</span> <span class="fn">_procesar_movimiento_local</span>() -&gt; <span class="type">void</span>:
 \t<span class="kw">var</span> input_dir := <span class="type">Input</span>.<span class="fn">get_vector</span>(<span class="str">"ui_left"</span>, <span class="str">"ui_right"</span>, <span class="str">"ui_up"</span>, <span class="str">"ui_down"</span>)
@@ -541,7 +541,6 @@
 
 <span class="kw">func</span> <span class="fn">_activar_cooldown_defensa</span>() -&gt; <span class="type">void</span>:
 \tdefensa_disponible = <span class="kw">false</span>
-\t<span class="cm"># Uso seguro del temporizador nativo de SceneTree</span>
 \t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">5.0</span>).timeout
 \tdefensa_disponible = <span class="kw">true</span>
 
@@ -551,24 +550,23 @@
 \t<span class="kw">if</span> bullet_scene:
 \t\t<span class="kw">var</span> bala = bullet_scene.<span class="fn">instantiate</span>()
 \t\tbala.global_position = global_position
-\t\t<span class="fn">get_tree</span>().root.<span class="fn">add_child</span>(bala)
+\t<span class="fn">get_tree</span>().root.<span class="fn">add_child</span>(bala)
 
-<span class="cm"># DESAFÍO 6: Anotación @rpc para la Defensa</span>
+<span class="cm"># DESAFÍO 6: Anotación @rpc para Aplicar Defensa</span>
 <span class="var">@rpc</span>([[5]])
-<span class="kw">func</span> <span class="fn">defenderse_remoto</span>() -&gt; <span class="type">void</span>:
+<span class="kw">func</span> <span class="fn">aplicar_defensa_remoto</span>() -&gt; <span class="type">void</span>:
 \testa_defendiendose = <span class="kw">true</span>
 \t<span class="fn">_aplicar_color_visual</span>(<span class="type">Color</span>(<span class="num">0.0</span>, <span class="num">0.7</span>, <span class="num">1.0</span>, <span class="num">1.0</span>))
-\t<span class="cm"># Temporizador seguro para restaurar el color defensivo</span>
 \t<span class="kw">await</span> <span class="fn">get_tree</span>().<span class="fn">create_timer</span>(<span class="num">1.5</span>).timeout
 \testa_defendiendose = <span class="kw">false</span>
 \t<span class="fn">_aplicar_color_visual</span>(<span class="type">Color</span>(<span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>, <span class="num">1.0</span>))`,
-                fullCode: `extends CharacterBody3D\n\n@export var speed: float = 5.0\n@export var bullet_scene: PackedScene = preload("res://bullet.tscn")\n\nvar esta_defendiendose: bool = false\nvar defensa_disponible: bool = true\n\nfunc _ready() -> void:\n\tvar sync_node := MultiplayerSynchronizer.new()\n\tsync_node.set_multiplayer_authority(name.to_int())\n\tsync_node.replication_config = SceneReplicationConfig.new()\n\tsync_node.replication_config.add_property(":position")\n\tadd_child(sync_node)\n\nfunc _physics_process(_delta: float) -> void:\n\tif not is_multiplayer_authority():\n\t\treturn\n\n\tif not esta_defendiendose:\n\t\t_procesar_movimiento_local()\n\n\tif Input.is_action_just_pressed("ui_accept") and not esta_defendiendose:\n\t\tdisparar_remoto.rpc()\n\n\tif Input.is_action_just_pressed("ui_focus_next") and defensa_disponible:\n\t\t_activar_cooldown_defensa()\n\t\tdefenderse_remoto.rpc()\n\nfunc _procesar_movimiento_local() -> void:\n\tvar input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")\n\tvar dir := Vector3(input_dir.x, 0, input_dir.y).normalized()\n\tvelocity = dir * speed\n\tmove_and_slide()\n\nfunc _activar_cooldown_defensa() -> void:\n\tdefensa_disponible = false\n\tawait get_tree().create_timer(5.0).timeout\n\tdefensa_disponible = true\n\n@rpc("any_peer", "call_local", "reliable")\nfunc disparar_remoto() -> void:\n\tif bullet_scene:\n\t\tvar bala = bullet_scene.instantiate()\n\t\tbala.global_position = global_position\n\t\tget_tree().root.add_child(bala)\n\n@rpc("any_peer", "call_local", "reliable")\nfunc defenderse_remoto() -> void:\n\testa_defendiendose = true\n\t_aplicar_color_visual(Color(0.0, 0.7, 1.0, 1.0))\n\tawait get_tree().create_timer(1.5).timeout\n\testa_defendiendose = false\n\t_aplicar_color_visual(Color(1.0, 1.0, 1.0, 1.0))`,
+                fullCode: `extends CharacterBody3D\n\n@export var speed: float = 5.0\n@export var bullet_scene: PackedScene = preload("res://bullet.tscn")\n\nvar esta_defendiendose: bool = false\nvar defensa_disponible: bool = true\n\nfunc _ready() -> void:\n\tvar sync_node := MultiplayerSynchronizer.new()\n\tsync_node.set_multiplayer_authority(name.to_int())\n\tsync_node.replication_config = SceneReplicationConfig.new()\n\tsync_node.replication_config.add_property(":position")\n\tadd_child(sync_node)\n\nfunc _physics_process(_delta: float) -> void:\n\tif not is_multiplayer_authority():\n\t\treturn\n\n\tif not esta_defendiendose:\n\t\t_procesar_movimiento_local()\n\n\tif Input.is_action_just_pressed("ui_accept") and not esta_defendiendose:\n\t\tdisparar_remoto.rpc()\n\n\tif Input.is_action_just_pressed("ui_focus_next") and defensa_disponible:\n\t\t_activar_cooldown_defensa()\n\t\taplicar_defensa_remoto.rpc()\n\nfunc _procesar_movimiento_local() -> void:\n\tvar input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")\n\tvar dir := Vector3(input_dir.x, 0, input_dir.y).normalized()\n\tvelocity = dir * speed\n\tmove_and_slide()\n\nfunc _activar_cooldown_defensa() -> void:\n\tdefensa_disponible = false\n\tawait get_tree().create_timer(5.0).timeout\n\tdefensa_disponible = true\n\n@rpc("any_peer", "call_local", "reliable")\nfunc disparar_remoto() -> void:\n\tif bullet_scene:\n\t\tvar bala = bullet_scene.instantiate()\n\t\tbala.global_position = global_position\n\t\tget_tree().root.add_child(bala)\n\n@rpc("any_peer", "call_local", "reliable")\nfunc aplicar_defensa_remoto() -> void:\n\testa_defendiendose = true\n\t_aplicar_color_visual(Color(0.0, 0.7, 1.0, 1.0))\n\tawait get_tree().create_timer(1.5).timeout\n\testa_defendiendose = false\n\t_aplicar_color_visual(Color(1.0, 1.0, 1.0, 1.0))`,
                 checklist: [
                     { title: "1. Crear Escena 3D del Jugador", desc: "Crea un nodo raíz <strong>CharacterBody3D</strong> con MeshInstance3D y CollisionShape3D." },
                     { title: "2. Conectar Script y Escena", desc: "Adjunta el script <strong>'PlayerController3D.gd'</strong> y asigna la escena <strong>'bullet.tscn'</strong> al export 'bullet_scene'." },
-                    { title: "3. Asignar Material Visual 3D", desc: "Asegúrate de asignar un <strong>StandardMaterial3D</strong> para permitir la variación de color." },
+                    { title: "3. Asignar Material Visual 3D", desc: "Asegúrate de asignar un <strong>StandardMaterial3D</strong> para permitir la variación de color al aplicar defensa." },
                     { title: "4. Probar Multi-Instancia Local", desc: "Activa 'Run Multiple Instances' (2 instancias) para probar el control independiente." },
-                    { title: "5. Validar Eventos RPC Remotos", desc: "Confirma que las acciones se reflejen simultáneamente en ambas ventanas de prueba." }
+                    { title: "5. Validar Eventos RPC Remotos", desc: "Confirma que las acciones de disparo y defensa se reflejen simultáneamente en ambas ventanas." }
                 ]
             },
             {
@@ -579,13 +577,12 @@
                 challenges: [
                     { answer: "IsOwner" },
                     { answer: "DispararRpc()" },
-                    { answer: "DefenderseRpc()" },
+                    { answer: "AplicarDefensaRpc()" },
                     { answer: "[Rpc(SendTo.Everyone)]" },
                     { answer: "Spawn()" },
                     { answer: "[Rpc(SendTo.Everyone)]" }
                 ],
-                codeTemplate: `<span class="kw">using</span> System.Collections;
-<span class="kw">using</span> UnityEngine;
+                codeTemplate: `<span class="kw">using</span> UnityEngine;
 <span class="kw">using</span> Unity.Netcode;
 
 <span class="kw">public class</span> <span class="type">PlayerController3D</span> : <span class="type">NetworkBehaviour</span>
@@ -615,7 +612,7 @@
         <span class="kw">if</span> (<span class="type">Input</span>.<span class="fn">GetButtonDown</span>(<span class="str">"Jump"</span>) &amp;&amp; defensaDisponible)
         {
             <span class="fn">ActivarCooldownDefensa</span>();
-            <span class="cm">// DESAFÍO 3: Invocar la llamada remota de defensa</span>
+            <span class="cm">// DESAFÍO 3: Invocar la llamada remota para Aplicar Defensa</span>
             [[2]];
         }
     }
@@ -628,16 +625,10 @@
         transform.position += dir * speed * <span class="type">Time</span>.deltaTime;
     }
 
-    <span class="cm">// Cooldown optimizado utilizando Corrutinas de Unity</span>
-    <span class="kw">private void</span> <span class="fn">ActivarCooldownDefensa</span>()
-    {
-        <span class="fn">StartCoroutine</span>(<span class="fn">CoRutinaCooldownDefensa</span>());
-    }
-
-    <span class="kw">private</span> <span class="type">IEnumerator</span> <span class="fn">CoRutinaCooldownDefensa</span>()
+    <span class="kw">private async void</span> <span class="fn">ActivarCooldownDefensa</span>()
     {
         defensaDisponible = <span class="kw">false</span>;
-        <span class="kw">yield return new</span> <span class="type">WaitForSeconds</span>(<span class="num">5.0f</span>);
+        <span class="kw">await</span> System.Threading.Tasks.<span class="type">Task</span>.<span class="fn">Delay</span>(<span class="num">5000</span>);
         defensaDisponible = <span class="kw">true</span>;
     }
 
@@ -653,48 +644,45 @@
         }
     }
 
-    <span class="cm">// DESAFÍO 6: Atributo RPC para replicar el estado del escudo</span>
+    <span class="cm">// DESAFÍO 6: Atributo RPC para replicar Aplicar Defensa</span>
     [[5]]
-    <span class="kw">public void</span> <span class="fn">DefenderseRpc</span>()
+    <span class="kw">public void</span> <span class="fn">AplicarDefensaRpc</span>()
     {
-        <span class="fn">StartCoroutine</span>(<span class="fn">CoRutinaAplicarDefensa</span>());
+        <span class="fn">AplicarDefensa</span>();
     }
 
-    <span class="kw">private</span> <span class="type">IEnumerator</span> <span class="fn">CoRutinaAplicarDefensa</span>()
+    <span class="kw">private void</span> <span class="fn">AplicarDefensa</span>()
     {
+        <span class="cm">// Lógica visual y estado de la defensa</span>
         estaDefendiendose = <span class="kw">true</span>;
-        <span class="fn">AplicarColorVisual</span>(<span class="kw">new</span> <span class="type">Color</span>(<span class="num">0.0f</span>, <span class="num">0.7f</span>, <span class="num">1.0f</span>, <span class="num">1.0f</span>));
-        <span class="kw">yield return new</span> <span class="type">WaitForSeconds</span>(<span class="num">1.5f</span>);
-        estaDefendiendose = <span class="kw">false</span>;
-        <span class="fn">AplicarColorVisual</span>(<span class="kw">new</span> <span class="type">Color</span>(<span class="num">1.0f</span>, <span class="num">1.0f</span>, <span class="num">1.0f</span>, <span class="num">1.0f</span>));
     }
 }`,
-                fullCode: `using System.Collections;\nusing UnityEngine;\nusing Unity.Netcode;\n\npublic class PlayerController3D : NetworkBehaviour\n{\n    [SerializeField] private float speed = 5.0f;\n    [SerializeField] private GameObject bulletPrefab;\n\n    private bool estaDefendiendose = false;\n    private bool defensaDisponible = true;\n\n    private void Update()\n    {\n        if (!IsOwner) return;\n\n        if (!estaDefendiendose)\n        {\n            ProcesarMovimientoLocal();\n        }\n\n        if (Input.GetButtonDown("Submit") && !estaDefendiendose)\n        {\n            DispararRpc();\n        }\n\n        if (Input.GetButtonDown("Jump") && defensaDisponible)\n        {\n            ActivarCooldownDefensa();\n            DefenderseRpc();\n        }\n    }\n\n    private void ProcesarMovimientoLocal()\n    {\n        float moveX = Input.GetAxisRaw("Horizontal");\n        float moveZ = Input.GetAxisRaw("Vertical");\n        Vector3 dir = new Vector3(moveX, 0, moveZ).normalized;\n        transform.position += dir * speed * Time.deltaTime;\n    }\n\n    private void ActivarCooldownDefensa()\n    {\n        StartCoroutine(CoRutinaCooldownDefensa());\n    }\n\n    private IEnumerator CoRutinaCooldownDefensa()\n    {\n        defensaDisponible = false;\n        yield return new WaitForSeconds(5.0f);\n        defensaDisponible = true;\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void DispararRpc()\n    {\n        if (bulletPrefab != null)\n        {\n            GameObject bala = Instantiate(bulletPrefab, transform.position, Quaternion.identity);\n            bala.GetComponent<NetworkObject>().Spawn();\n        }\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void DefenderseRpc()\n    {\n        StartCoroutine(CoRutinaAplicarDefensa());\n    }\n\n    private IEnumerator CoRutinaAplicarDefensa()\n    {\n        estaDefendiendose = true;\n        AplicarColorVisual(new Color(0.0f, 0.7f, 1.0f, 1.0f));\n        yield return new WaitForSeconds(1.5f);\n        estaDefendiendose = false;\n        AplicarColorVisual(new Color(1.0f, 1.0f, 1.0f, 1.0f));\n    }\n}`,
+                fullCode: `using UnityEngine;\nusing Unity.Netcode;\n\npublic class PlayerController3D : NetworkBehaviour\n{\n    [SerializeField] private float speed = 5.0f;\n    [SerializeField] private GameObject bulletPrefab;\n\n    private bool estaDefendiendose = false;\n    private bool defensaDisponible = true;\n\n    private void Update()\n    {\n        if (!IsOwner) return;\n\n        if (!estaDefendiendose)\n        {\n            ProcesarMovimientoLocal();\n        }\n\n        if (Input.GetButtonDown("Submit") && !estaDefendiendose)\n        {\n            DispararRpc();\n        }\n\n        if (Input.GetButtonDown("Jump") && defensaDisponible)\n        {\n            ActivarCooldownDefensa();\n            AplicarDefensaRpc();\n        }\n    }\n\n    private void ProcesarMovimientoLocal()\n    {\n        float moveX = Input.GetAxisRaw("Horizontal");\n        float moveZ = Input.GetAxisRaw("Vertical");\n        Vector3 dir = new Vector3(moveX, 0, moveZ).normalized;\n        transform.position += dir * speed * Time.deltaTime;\n    }\n\n    private async void ActivarCooldownDefensa()\n    {\n        defensaDisponible = false;\n        await System.Threading.Tasks.Task.Delay(5000);\n        defensaDisponible = true;\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void DispararRpc()\n    {\n        if (bulletPrefab != null)\n        {\n            GameObject bala = Instantiate(bulletPrefab, transform.position, Quaternion.identity);\n            bala.GetComponent<NetworkObject>().Spawn();\n        }\n    }\n\n    [Rpc(SendTo.Everyone)]\n    public void AplicarDefensaRpc()\n    {\n        AplicarDefensa();\n    }\n\n    private void AplicarDefensa()\n    {\n        estaDefendiendose = true;\n    }\n}`,
                 checklist: [
                     { title: "1. Crear el Script 'PlayerController3D.cs'", desc: "Crea el archivo C# en Assets/Scripts y ajústalo al Prefab 3D del personaje." },
                     { title: "2. Componente NetworkObject", desc: "Asegúrate de incluir <strong>NetworkObject</strong> en el Jugador y en el Proyectil." },
                     { title: "3. Asignar Prefab de Proyectil", desc: "Arrastra el prefab de la bala al campo <strong>'bulletPrefab'</strong> en el Inspector." },
                     { title: "4. Registrar en NetworkManager", desc: "Añade los prefabs a la lista de <strong>NetworkPrefabs</strong> del NetworkManager." },
-                    { title: "5. Probar Build vs Editor", desc: "Genera un ejecutable e inicia Host/Client para comprobar el funcionamiento en red." }
+                    { title: "5. Probar Build vs Editor", desc: "Genera un ejecutable e inicia Host/Client para comprobar el funcionamiento de AplicarDefensa en red." }
                 ]
             }
         ],
         expectedResultsChecklist: [
             { title: "Movimiento Autónomo 3D 🏃‍♂️", desc: "Cada instancia controla exclusivamente a su propio personaje 3D a través de las físicas nativas." },
             { title: "Sincronización Ofensiva (Disparo) 🔫", desc: "El proyectil debe instanciarse en la misma posición de la red en todas las ventanas activas al mismo tiempo." },
-            { title: "Sincronización Defensiva (Escudo Visual) 🛡️", desc: "Al activar la defensa, el personaje cambia de color visualmente en todas las pantallas simultáneamente con temporizador optimizado." }
+            { title: "Sincronización Defensiva (Aplicar Defensa) 🛡️", desc: "Al ejecutar la acción AplicarDefensa, el estado y el efecto visual cambian simultáneamente en todas las pantallas." }
         ],
         delivery: {
-            instructions: "Exporta la build en formato <strong>.exe</strong> (junto a sus archivos de datos adjuntos) e incluye la <strong>carpeta de scripts</strong> del proyecto. Comprímelo todo en un archivo <strong>.zip</strong> o <strong>.rar</strong> y súbelo a la carpeta compartida.",
+            instructions: `Exporta la build en formato <strong>.exe</strong> (junto a sus archivos de datos adjuntos) e incluye la <strong>carpeta de scripts</strong> del proyecto. Comprímelo todo en un archivo <strong>.zip</strong> o <strong>.rar</strong> y súbelo a la carpeta compartida.`,
             buttonText: "📂 Abrir Carpeta de Entrega en Google Drive ↗",
-            url: "https://drive.google.com/drive/folders/1P2m34MooBDFOxsFatV9paNU49p55xDdJ?usp=sharing"
+            url: "https://drive.google.com/drive/folders/1mGelamoAHuc0POStiuySC-a-k4OLIDBB?usp=sharing"
         }
     };
 
     let currentOptionIndex = 0;
 
     function initApp() {
-        document.getElementById('app-subject').innerText = EXERCISE_CONFIG.subject || "TALLER DE DESARROLLO DE JUEGOS MULTIJUGADOR | UPSO";
+        document.getElementById('app-subject').innerText = EXERCISE_CONFIG.subject || "Programación de Videojuegos";
         document.getElementById('app-subtitle').innerText = EXERCISE_CONFIG.subtitle;
         document.getElementById('obj-title').innerHTML = EXERCISE_CONFIG.objective.title;
         document.getElementById('obj-desc').innerHTML = EXERCISE_CONFIG.objective.description;
